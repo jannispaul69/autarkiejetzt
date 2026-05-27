@@ -1,10 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { createClient } from "@supabase/supabase-js";
 import { createServerClient } from "@/lib/supabase/server";
 import type { LeadStatus } from "./types";
 
 const db = () => createServerClient();
+
+/** Admin client with service role — required for auth.admin.* calls */
+const adminClient = () =>
+  createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
 
 // ---------------------------------------------------------------------------
 // Assignment mutations (buyer)
@@ -56,13 +64,27 @@ export async function updateAssignmentFollowup(
 // ---------------------------------------------------------------------------
 
 export async function assignLeadToBuyer(leadId: string, buyerId: string) {
-  // Upsert: if assignment already exists for this lead+buyer, skip
-  const { error } = await db()
+  const supabase = db();
+
+  // Check if this lead+buyer combination already exists — no unique constraint
+  // in the DB so we can't rely on ON CONFLICT
+  const { data: existing } = await supabase
     .from("lead_assignments")
-    .upsert(
-      { lead_id: leadId, buyer_id: buyerId, status: "new" },
-      { onConflict: "lead_id,buyer_id" }
-    );
+    .select("id")
+    .eq("lead_id", leadId)
+    .eq("buyer_id", buyerId)
+    .maybeSingle();
+
+  if (existing) {
+    // Already assigned — nothing to do
+    revalidatePath("/portal/admin/leads");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("lead_assignments")
+    .insert({ lead_id: leadId, buyer_id: buyerId, status: "new" });
+
   if (error) throw new Error(error.message);
   revalidatePath("/portal/admin/leads");
 }
@@ -87,33 +109,17 @@ export async function createBuyer(formData: FormData) {
   );
   const password = formData.get("password") as string;
 
-  // Create auth user with service role (admin API)
-  const serviceUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  // Create auth user — requires service role key (auth.admin.* API)
+  const { data: { user: newUser }, error: authError } =
+    await adminClient().auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+    });
 
-  const authRes = await fetch(
-    `${serviceUrl}/auth/v1/admin/users`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: serviceKey,
-        Authorization: `Bearer ${serviceKey}`,
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        email_confirm: true,
-      }),
-    }
-  );
-
-  if (!authRes.ok) {
-    const err = await authRes.json();
-    throw new Error(err.message ?? "Fehler beim Anlegen des Auth-Users");
+  if (authError || !newUser) {
+    throw new Error(authError?.message ?? "Fehler beim Anlegen des Auth-Users");
   }
-
-  const { user: newUser } = await authRes.json();
 
   const { error } = await db().from("buyers").insert({
     user_id: newUser.id,
