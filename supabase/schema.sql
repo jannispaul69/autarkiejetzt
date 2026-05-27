@@ -82,3 +82,22 @@ CREATE POLICY "auth_select_leads"
 
 CREATE POLICY "auth_select_form_events"
   ON form_events FOR SELECT TO authenticated USING (true);
+
+-- ============================================================
+-- Deletion log table (DSGVO Art. 17 compliance)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS deletion_log (
+  id                   UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at           TIMESTAMPTZ NOT NULL DEFAULT now(),
+  email                TEXT        NOT NULL,
+  leads_deleted_count  INTEGER     NOT NULL DEFAULT 0,
+  ip_address           INET,
+  user_agent           TEXT
+);
+
+CREATE INDEX IF NOT EXISTS deletion_log_created_at_idx ON deletion_log (created_at DESC);
+CREATE INDEX IF NOT EXISTS deletion_log_email_idx      ON deletion_log (email);
+
+-- Row Level Security — service role only, no anon access
+ALTER TABLE deletion_log ENABLE ROW LEVEL SECURITY;

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import DeletionRequestForm from "@/components/DeletionRequestForm";
 
 export const metadata: Metadata = {
   title: "Datenschutzerklärung – Autarkie Jetzt",
@@ -377,33 +378,9 @@ export default function DatenschutzPage() {
           </p>
         </Section>
 
-        {/* Datenlöschungs-Box */}
-        <div
-          className="mt-4 mb-12 rounded-2xl border p-6 sm:p-8"
-          style={{
-            backgroundColor: "rgba(10, 77, 60, 0.05)",
-            borderColor: "rgba(10, 77, 60, 0.20)",
-          }}
-        >
-          <h2 className="font-heading text-xl font-bold text-brand-text mb-2 tracking-tight">
-            Ihre Datenschutzrechte ausüben
-          </h2>
-          <p className="text-brand-text-muted leading-[1.8] mb-5">
-            Für Auskunft, Berichtigung, Löschung oder Widerruf Ihrer
-            Einwilligung – wir helfen Ihnen schnell und unkompliziert
-            weiter.
-          </p>
-          <a
-            href="mailto:anfrage@autarkiejetzt.de"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white transition-all duration-200 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-            style={{ backgroundColor: "#0A4D3C" }}
-          >
-            anfrage@autarkiejetzt.de schreiben
-          </a>
-          <p className="mt-4 text-xs text-brand-text-muted">
-            Antwort innerhalb von 30 Tagen (Art. 12 DSGVO) · Widerruf
-            der Einwilligung jederzeit möglich
-          </p>
+        {/* Automated deletion form */}
+        <div className="mt-4 mb-12">
+          <DeletionRequestForm />
         </div>
       </div>
     </main>
