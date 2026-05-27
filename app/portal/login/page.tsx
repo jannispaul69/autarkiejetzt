@@ -31,7 +31,7 @@ function LoginForm() {
       toast.error("Falsche E-Mail oder Passwort.");
       return;
     }
-    router.push(redirect);
+    router.push("/portal/dashboard");
     router.refresh();
   }
 
