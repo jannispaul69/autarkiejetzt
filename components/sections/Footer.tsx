@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CookieSettingsLink from "@/components/CookieSettingsLink";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -47,6 +48,7 @@ export default function Footer() {
                 {label}
               </Link>
             ))}
+            <CookieSettingsLink />
           </div>
 
           {/* Col 3: Contact */}
