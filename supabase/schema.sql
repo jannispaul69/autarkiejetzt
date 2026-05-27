@@ -250,7 +250,9 @@ CREATE TABLE IF NOT EXISTS phone_verifications (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
   lead_id     UUID        REFERENCES leads(id) ON DELETE CASCADE,
   phone       TEXT        NOT NULL,
-  code        TEXT        NOT NULL,
+  -- code is NULL when using Twilio Verify (code managed externally)
+  code        TEXT,
+  channel     TEXT        NOT NULL DEFAULT 'sms' CHECK (channel IN ('sms', 'call')),
   expires_at  TIMESTAMPTZ NOT NULL,
   verified_at TIMESTAMPTZ,
   attempts    INTEGER     NOT NULL DEFAULT 0
@@ -264,6 +266,14 @@ ALTER TABLE phone_verifications ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS phone_verified    BOOLEAN     DEFAULT false;
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS phone_verified_at TIMESTAMPTZ;
+
+-- ── Migration for existing installations ─────────────────────────────────────
+-- Run these if the table was already created with the old schema:
+--
+-- ALTER TABLE phone_verifications ALTER COLUMN code DROP NOT NULL;
+-- ALTER TABLE phone_verifications
+--   ADD COLUMN IF NOT EXISTS channel TEXT NOT NULL DEFAULT 'sms'
+--   CHECK (channel IN ('sms', 'call'));
 
 -- ============================================================
 -- Solar-Check extended fields (migration for existing installations)

@@ -3,7 +3,8 @@ import { leadSchema } from "@/lib/validation/schemas";
 import { sendSmsCodePendingEmail } from "@/lib/email/resend";
 import { sendConversionEvent } from "@/lib/meta/conversion-api";
 import { scoreLeadData } from "@/lib/scoring/leadScoring";
-import { normalizePhone, maskPhone, sendSms } from "@/lib/twilio/client";
+import { normalizePhone, maskPhone } from "@/lib/twilio/client";
+import { sendVerificationCode } from "@/lib/twilio/verify";
 import { randomUUID } from "crypto";
 
 const hasSupabase = !!(
@@ -79,28 +80,28 @@ export async function POST(req: NextRequest) {
       console.warn("[mock mode] Supabase not configured – lead not persisted. ID:", leadId);
     }
 
-    // ── Send SMS verification code ──────────────────────────────────────────
-    // The buyer notification email is withheld until phone is verified.
-    // On SMS failure: log and continue — user can resend from verify page.
+    // ── Send initial verification code via Twilio Verify ───────────────────
+    // Buyer notification is withheld until phone is verified (in /api/verify/check).
+    // On failure: log and continue — user can trigger resend from the verify page.
     if (hasSupabase) {
       const normalizedPhone = normalizePhone(data.phone);
-      const verifyCode = Math.floor(1000 + Math.random() * 9000).toString();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
       const { createServerClient: getClient } = await import("@/lib/supabase/server");
       const sbClient = getClient();
 
+      // Record for rate limiting and audit — Twilio manages the code itself
       await sbClient.from("phone_verifications").insert({
         lead_id:    leadId,
         phone:      normalizedPhone,
-        code:       verifyCode,
+        channel:    "sms",
         expires_at: expiresAt,
       });
 
       try {
-        await sendSms(normalizedPhone, `Dein Autarkie Jetzt Code: ${verifyCode}. Gültig 10 Min.`);
-      } catch (smsErr) {
-        console.error("[lead] SMS send failed (non-fatal):", smsErr);
+        await sendVerificationCode(normalizedPhone, "sms");
+      } catch (verifyErr) {
+        console.error("[lead] Twilio Verify send failed (non-fatal):", verifyErr);
       }
     }
 

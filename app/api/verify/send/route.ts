@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { normalizePhone, sendSms } from "@/lib/twilio/client";
+import { normalizePhone } from "@/lib/twilio/client";
+import { sendVerificationCode } from "@/lib/twilio/verify";
 import { createServerClient } from "@/lib/supabase/server";
 
 const schema = z.object({
   lead_id: z.string().uuid("Ungültige Lead-ID"),
   phone:   z.string().min(6, "Ungültige Telefonnummer"),
+  channel: z.enum(["sms", "call"]).default("sms"),
 });
 
 export async function POST(req: NextRequest) {
@@ -20,7 +22,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { lead_id, phone } = parsed.data;
+    const { lead_id, phone, channel } = parsed.data;
     const normalizedPhone = normalizePhone(phone);
 
     const supabase = createServerClient();
@@ -41,7 +43,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ already_verified: true });
     }
 
-    // 3. Rate limit: max 3 SMS per lead per hour
+    // 3. Rate limit: max 3 sends per lead per hour
     const { count } = await supabase
       .from("phone_verifications")
       .select("*", { count: "exact", head: true })
@@ -52,44 +54,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "rate_limit" }, { status: 429 });
     }
 
-    // 4. Generate 4-digit code
-    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    // 4. Dispatch via Twilio Verify — code generated and sent internally
+    await sendVerificationCode(normalizedPhone, channel);
+
+    // 5. Record for rate limiting and audit (no code stored — Twilio manages it)
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    await supabase.from("phone_verifications").insert({
+      lead_id,
+      phone:      normalizedPhone,
+      channel,
+      expires_at: expiresAt,
+    });
 
-    // 5. Save to DB BEFORE sending SMS (so we can clean up on SMS failure)
-    const { data: verification, error: insertError } = await supabase
-      .from("phone_verifications")
-      .insert({
-        lead_id,
-        phone: normalizedPhone,
-        code,
-        expires_at: expiresAt,
-      })
-      .select("id")
-      .single();
-
-    if (insertError || !verification) {
-      console.error("[verify/send] DB insert error:", insertError);
-      return NextResponse.json({ error: "Datenbankfehler" }, { status: 500 });
-    }
-
-    // 6. Send SMS via Twilio
-    try {
-      await sendSms(
-        normalizedPhone,
-        `Dein Autarkie Jetzt Code: ${code}. Gültig 10 Min.`,
-      );
-    } catch (smsErr) {
-      console.error("[verify/send] Twilio error:", smsErr);
-      // Roll back DB entry since SMS failed
-      await supabase.from("phone_verifications").delete().eq("id", verification.id);
-      return NextResponse.json(
-        { error: "SMS konnte nicht gesendet werden" },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json({ success: true, expires_in: 600 });
+    return NextResponse.json({ success: true, channel, expires_in: 600 });
   } catch (err) {
     console.error("[verify/send] unhandled error:", err);
     return NextResponse.json({ error: "Serverfehler" }, { status: 500 });

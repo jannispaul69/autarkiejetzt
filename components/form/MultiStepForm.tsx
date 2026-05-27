@@ -114,12 +114,14 @@ export default function MultiStepForm() {
 
     clearStorage();
 
-    // Store phone for masked display on verify page
+    // Store phone in sessionStorage as fallback (URL param is primary)
     try {
       sessionStorage.setItem("aj_pending_phone", payload.phone ?? "");
     } catch {}
 
-    router.push(`/danke/verifizieren?id=${body.leadId}`);
+    router.push(
+      `/danke/verifizieren?id=${body.leadId}&phone=${encodeURIComponent(payload.phone ?? "")}`,
+    );
   }
 
   return (

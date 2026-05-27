@@ -120,12 +120,14 @@ export default function SolarCheckForm() {
 
     clearStorage();
 
-    // Store phone for masked display on verify page
+    // Store phone in sessionStorage as fallback (URL param is primary)
     try {
       sessionStorage.setItem("aj_pending_phone", finalData.phone ?? "");
     } catch {}
 
-    router.push(`/danke/verifizieren?id=${body.leadId}`);
+    router.push(
+      `/danke/verifizieren?id=${body.leadId}&phone=${encodeURIComponent(finalData.phone ?? "")}`,
+    );
   }
 
   return (
