@@ -32,7 +32,10 @@ export async function POST(req: NextRequest) {
     const eventId = randomUUID();
 
     // Score the lead (pure function, no I/O)
-    const score = scoreLeadData(data);
+    const score = scoreLeadData(data, {
+      financing_type: body.financing_type,
+      heating_type: body.heating_type,
+    });
 
     const ipAddress =
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
@@ -59,6 +62,13 @@ export async function POST(req: NextRequest) {
         user_agent: userAgent,
         quality_score: score.total,
         quality_grade: score.grade,
+        // Solar-check extended fields (null on standard funnel)
+        building_type: body.building_type ?? null,
+        roof_type: body.roof_type ?? null,
+        heating_type: body.heating_type ?? null,
+        financing_type: body.financing_type ?? null,
+        previous_consultation: body.previous_consultation ?? null,
+        motivations: body.motivations ?? null,
       });
       if (error) {
         console.error("[supabase] insert error:", error);

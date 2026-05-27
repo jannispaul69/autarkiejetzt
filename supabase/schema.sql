@@ -240,3 +240,14 @@ CREATE POLICY "admin_all_team"
       WHERE b.user_id = auth.uid() AND b.role = 'admin'
     )
   );
+
+-- ============================================================
+-- Solar-Check extended fields (migration for existing installations)
+-- ============================================================
+
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS building_type         TEXT;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS roof_type             TEXT;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS heating_type          TEXT;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS financing_type        TEXT;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS previous_consultation TEXT;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS motivations           TEXT[];

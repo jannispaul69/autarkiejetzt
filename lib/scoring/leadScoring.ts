@@ -7,18 +7,34 @@ export interface LeadScore {
   total: number; // 0–100
   grade: "A" | "B" | "C";
   breakdown: {
-    roof: number;         // max 25
-    consumption: number;  // max 25
-    timeframe: number;    // max 30
-    location: number;     // max 10
-    completeness: number; // max 10
+    roof: number;              // max 25
+    consumption: number;       // max 25
+    timeframe: number;         // max 30
+    location: number;          // max 10
+    completeness: number;      // max 10
+    financing_bonus?: number;  // max 10 (solar-check only)
+    heating_bonus?: number;    // max 5  (solar-check only)
   };
   summary: string;
+}
+
+// Optional extra fields collected by the solar-check funnel
+export interface ScoringExtras {
+  financing_type?: string;
+  heating_type?: string;
 }
 
 // ---------------------------------------------------------------------------
 // Score tables
 // ---------------------------------------------------------------------------
+
+const FINANCING_BONUS: Record<string, number> = {
+  cash: 10,
+  financing: 6,
+  leasing: 4,
+  unknown: 2,
+};
+
 const ROOF_SCORES: Record<string, number> = {
   south: 25,
   east_west: 18,
@@ -59,7 +75,7 @@ const GRADE_SUMMARIES: Record<"A" | "B" | "C", string> = {
 // ---------------------------------------------------------------------------
 // Main scoring function
 // ---------------------------------------------------------------------------
-export function scoreLeadData(data: LeadFormData): LeadScore {
+export function scoreLeadData(data: LeadFormData, extras?: ScoringExtras): LeadScore {
   // Roof orientation (max 25)
   const roof = ROOF_SCORES[data.roof_orientation] ?? 12;
 
@@ -83,13 +99,26 @@ export function scoreLeadData(data: LeadFormData): LeadScore {
   const prefix = (data.postal_code ?? "").slice(0, 2);
   const location = prefix === "27" || prefix === "28" ? 10 : 6;
 
-  const total = roof + consumption + timeframe + location + completeness;
+  // Solar-check bonus: financing type (max 10)
+  const financing_bonus = extras?.financing_type != null
+    ? (FINANCING_BONUS[extras.financing_type] ?? 0)
+    : 0;
+
+  // Solar-check bonus: heating type — gas/oil cross-sell potential (max 5)
+  const heating_bonus = extras?.heating_type != null
+    ? (extras.heating_type === "gas" || extras.heating_type === "oil" ? 5 : 2)
+    : 0;
+
+  const total = Math.min(
+    100,
+    roof + consumption + timeframe + location + completeness + financing_bonus + heating_bonus,
+  );
   const grade = gradeFromTotal(total);
 
   return {
     total,
     grade,
-    breakdown: { roof, consumption, timeframe, location, completeness },
+    breakdown: { roof, consumption, timeframe, location, completeness, financing_bonus, heating_bonus },
     summary: GRADE_SUMMARIES[grade],
   };
 }

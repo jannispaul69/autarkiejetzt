@@ -47,3 +47,39 @@ export const leadSchema = step1Schema
   .merge(step6Schema);
 
 export type LeadFormData = z.infer<typeof leadSchema>;
+
+// ─── Solar-Check extended schemas ───────────────────────────────────────────
+
+export const scBuildingSchema = z.object({
+  building_type: z.enum(["single_family", "semi_detached", "multi_family", "commercial"]),
+  roof_type: z.enum(["gable", "flat", "pent", "hip", "unknown"]),
+});
+
+export const scHeatingSchema = z.object({
+  heating_type: z.enum(["gas", "oil", "district", "heat_pump", "electric", "other"]),
+});
+
+export const scFinanceSchema = z.object({
+  financing_type: z.enum(["cash", "financing", "leasing", "unknown"]),
+  previous_consultation: z.enum(["none", "want_second", "had_offer"]),
+});
+
+export const scTimeframeMotivationSchema = z.object({
+  timeframe: z.enum(["immediate", "1_3_months", "3_6_months", "info_only"]),
+  motivations: z
+    .array(z.enum(["cost", "independence", "environment", "property_value", "storage"]))
+    .min(1, "Bitte wähle mindestens eine Motivation")
+    .max(2, "Maximal 2 Motivationen"),
+});
+
+export const solarCheckLeadSchema = step1Schema
+  .merge(scBuildingSchema)
+  .merge(step2Schema)
+  .merge(step3Schema)
+  .merge(scHeatingSchema)
+  .merge(scFinanceSchema)
+  .merge(scTimeframeMotivationSchema)
+  .merge(step5Schema)
+  .merge(step6Schema);
+
+export type SolarCheckLeadData = z.infer<typeof solarCheckLeadSchema>;
