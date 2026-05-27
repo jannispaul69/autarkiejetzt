@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Autarkie Jetzt
 
-## Getting Started
+Lead-Generation-Landingpage für Photovoltaik-Anfragen. Gebaut mit Next.js 15, Tailwind CSS v4, shadcn/ui und Supabase.
 
-First, run the development server:
+## Lokale Entwicklung
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Voraussetzungen
+
+- Node.js 18+
+- npm
+
+### Setup
+
+1. Repository klonen:
+   ```bash
+   git clone <repo-url>
+   cd autarkie-jetzt
+   ```
+
+2. Dependencies installieren:
+   ```bash
+   npm install
+   ```
+
+3. Environment-Variablen anlegen:
+   ```bash
+   cp .env.local.example .env.local
+   ```
+   Dann `.env.local` mit echten Werten befüllen (Supabase, Resend, Meta).
+
+4. Entwicklungsserver starten (mit Turbopack):
+   ```bash
+   npm run dev
+   ```
+
+5. Browser öffnen: [http://localhost:3000](http://localhost:3000)
+
+### Verfügbare Befehle
+
+| Befehl | Beschreibung |
+|--------|-------------|
+| `npm run dev` | Dev-Server mit Turbopack starten |
+| `npm run build` | Produktions-Build erstellen |
+| `npm run start` | Produktions-Build starten |
+| `npm run lint` | ESLint ausführen |
+
+## Projektstruktur
+
+```
+autarkie-jetzt/
+├── app/                    # Next.js App Router
+│   ├── layout.tsx          # Root Layout mit Fonts + Metadata
+│   ├── page.tsx            # Landingpage (Server Component)
+│   ├── danke/              # Danke-Seite nach erfolgreicher Submission
+│   ├── impressum/          # Impressum (Platzhalter)
+│   ├── datenschutz/        # Datenschutzerklärung (Platzhalter)
+│   ├── agb/                # AGB (Platzhalter)
+│   └── api/
+│       ├── lead/           # POST /api/lead – Form-Submit
+│       ├── event/          # POST /api/event – Drop-off-Tracking
+│       └── meta-conversion/ # POST /api/meta-conversion – Server-side Pixel
+├── components/
+│   ├── ui/                 # shadcn/ui Komponenten
+│   ├── sections/           # Seitenabschnitte (Hero, FAQ, etc.)
+│   └── form/               # MultiStepForm + Steps
+├── lib/
+│   ├── supabase/           # Supabase Browser- und Server-Client
+│   ├── meta/               # Meta Pixel + Conversion API Helpers
+│   ├── validation/         # Zod-Schemas für alle Form-Steps
+│   └── email/              # Resend E-Mail-Templates
+└── public/                 # Statische Assets (logo.svg, hero.jpg)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Supabase-Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Im Supabase-Dashboard das SQL aus `CLAUDE.md` → Abschnitt 6 ausführen, um die Tabellen `leads` und `form_events` anzulegen.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deployment
 
-## Learn More
+1. GitHub-Repo erstellen und pushen
+2. In [Vercel](https://vercel.com) importieren
+3. Environment-Variablen aus `.env.local.example` in Vercel eintragen
+4. Domain `autarkiejetzt.de` in Vercel hinzufügen und DNS-Records setzen
 
-To learn more about Next.js, take a look at the following resources:
+## Sprint-Planung
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Sprint 1:** Setup ✅ + Hero + MultiStepForm + Submission-Logik
+- **Sprint 2:** Restliche Sektionen, Rechtsseiten, Conversion-Tracking
+- **Sprint 3:** Polishing, Mobile-Tuning, A11y, Lighthouse ≥ 95
