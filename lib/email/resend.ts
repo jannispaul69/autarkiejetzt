@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import type { LeadFormData } from "@/lib/validation/schemas";
+import type { LeadScore } from "@/lib/scoring/leadScoring";
 
 // ---------------------------------------------------------------------------
 // Human-readable label maps
@@ -61,10 +62,86 @@ function row(labelText: string, valueHtml: string): string {
   </tr>`;
 }
 
+/** Inline score chip: "Label  22/25" */
+function scoreChip(chipLabel: string, pts: number, max: number): string {
+  return `<td style="padding-right:14px;white-space:nowrap;vertical-align:middle">
+    <span style="font-size:12px;color:#6b7280">${chipLabel}</span>
+    <strong style="font-size:12px;color:#111827;margin-left:3px">${pts}/${max}</strong>
+  </td>`;
+}
+
+// ---------------------------------------------------------------------------
+// Score banner (inserted right after the header)
+// ---------------------------------------------------------------------------
+type GradeCfg = { bg: string; border: string; titleColor: string; icon: string; label: string };
+
+const GRADE_CONFIGS: Record<"A" | "B" | "C", GradeCfg> = {
+  A: {
+    bg: "#F0FDF4",
+    border: "#16A34A",
+    titleColor: "#15803D",
+    icon: "⭐",
+    label: "Sofort anrufen!",
+  },
+  B: {
+    bg: "#FFFBEB",
+    border: "#D97706",
+    titleColor: "#92400E",
+    icon: "🔥",
+    label: "Heute kontaktieren",
+  },
+  C: {
+    bg: "#F9FAFB",
+    border: "#6B7280",
+    titleColor: "#374151",
+    icon: "📋",
+    label: "24h Zeitfenster",
+  },
+};
+
+function scoreBannerHtml(score: LeadScore): string {
+  const cfg = GRADE_CONFIGS[score.grade];
+  const bd = score.breakdown;
+
+  return `
+          <!-- ── SCORE BANNER ───────────────────────────────────────────── -->
+          <tr>
+            <td style="padding:20px 32px 0">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td style="background:${cfg.bg};border-left:4px solid ${cfg.border};
+                             padding:16px 20px;border-radius:0 8px 8px 0">
+
+                    <!-- Grade headline -->
+                    <p style="margin:0 0 11px;font-size:16px;font-weight:700;
+                              color:${cfg.titleColor};line-height:1.2">
+                      ${cfg.icon}&nbsp; ${score.grade}-Lead
+                      &nbsp;·&nbsp; Score: <strong>${score.total}/100</strong>
+                      &nbsp;·&nbsp; ${cfg.label}
+                    </p>
+
+                    <!-- Score breakdown chips -->
+                    <table cellpadding="0" cellspacing="0" role="presentation">
+                      <tr>
+                        ${scoreChip("Dach", bd.roof, 25)}
+                        ${scoreChip("Verbrauch", bd.consumption, 25)}
+                        ${scoreChip("Zeitraum", bd.timeframe, 30)}
+                        ${scoreChip("Region", bd.location, 10)}
+                        ${scoreChip("Vollständigkeit", bd.completeness, 10)}
+                      </tr>
+                    </table>
+
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>`;
+}
+
 // ---------------------------------------------------------------------------
 // Notification email (→ Jannis / internal team)
 // ---------------------------------------------------------------------------
-function notificationHtml(lead: LeadFormData & { id: string }): string {
+function notificationHtml(lead: LeadFormData & { id: string }, score: LeadScore): string {
   const fullName = `${lead.first_name} ${lead.last_name}`;
   const address = `${lead.postal_code}${lead.city ? ` ${lead.city}` : ""}`;
   const phoneClean = lead.phone.replace(/\s+/g, "");
@@ -76,10 +153,10 @@ function notificationHtml(lead: LeadFormData & { id: string }): string {
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Neuer PV-Lead – Autarkie Jetzt</title>
 </head>
-<body style="margin:0;padding:0;background:#EBEBЕ6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,Arial,sans-serif">
+<body style="margin:0;padding:0;background:#EAEAE5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,Arial,sans-serif">
 
   <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
-         style="background:#EBEBЕ6;min-height:100vh">
+         style="background:#EAEAE5;min-height:100vh">
     <tr>
       <td align="center" style="padding:32px 16px">
 
@@ -101,9 +178,11 @@ function notificationHtml(lead: LeadFormData & { id: string }): string {
             </td>
           </tr>
 
+          ${scoreBannerHtml(score)}
+
           <!-- ── SECTION 1: KONTAKT ─────────────────────────────────────── -->
           <tr>
-            <td style="padding:28px 32px 0">
+            <td style="padding:20px 32px 0">
               <p style="margin:0 0 10px;font-size:10.5px;font-weight:700;
                         letter-spacing:0.14em;text-transform:uppercase;
                         color:#0A4D3C">
@@ -218,19 +297,15 @@ function confirmationHtml(lead: LeadFormData): string {
           <!-- ── HEADER ─────────────────────────────────────────────────── -->
           <tr>
             <td style="background:#0A4D3C;padding:28px 32px">
-              <!-- Logo wordmark -->
               <p style="margin:0 0 16px;font-size:13px;font-weight:700;
                         letter-spacing:0.08em;color:rgba(255,255,255,0.55)">
                 ☀️ AUTARKIE JETZT
               </p>
-              <!-- Checkmark circle -->
               <table cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
                   <td style="width:40px;vertical-align:middle">
                     <div style="width:36px;height:36px;border-radius:50%;
                                 background:rgba(255,255,255,0.15);
-                                display:flex;align-items:center;
-                                justify-content:center;
                                 font-size:20px;line-height:36px;text-align:center">
                       ✓
                     </div>
@@ -273,7 +348,6 @@ function confirmationHtml(lead: LeadFormData): string {
                               letter-spacing:0.1em">
                       Was passiert als Nächstes?
                     </p>
-                    <!-- Step list -->
                     <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                       <tr>
                         <td style="width:28px;vertical-align:top;padding-top:2px">
@@ -357,7 +431,10 @@ function confirmationHtml(lead: LeadFormData): string {
 // ---------------------------------------------------------------------------
 // Exported send functions
 // ---------------------------------------------------------------------------
-export async function sendLeadNotification(lead: LeadFormData & { id: string }) {
+export async function sendLeadNotification(
+  lead: LeadFormData & { id: string },
+  score: LeadScore
+) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.warn("[resend] RESEND_API_KEY not set – skipping notification email");
@@ -372,8 +449,8 @@ export async function sendLeadNotification(lead: LeadFormData & { id: string }) 
   await resend.emails.send({
     from: process.env.LEAD_NOTIFY_FROM ?? "leads@autarkiejetzt.de",
     to,
-    subject: `☀️ Neuer Lead: ${lead.first_name} ${lead.last_name} – ${lead.postal_code}${lead.city ? ` ${lead.city}` : ""}`,
-    html: notificationHtml(lead),
+    subject: `☀️ [${score.grade}-Lead · ${score.total}/100] ${lead.first_name} ${lead.last_name} – ${lead.postal_code}${lead.city ? ` ${lead.city}` : ""}`,
+    html: notificationHtml(lead, score),
   });
 }
 

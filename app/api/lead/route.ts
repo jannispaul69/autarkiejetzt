@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { leadSchema } from "@/lib/validation/schemas";
 import { sendLeadNotification, sendLeadConfirmation } from "@/lib/email/resend";
 import { sendConversionEvent } from "@/lib/meta/conversion-api";
+import { scoreLeadData } from "@/lib/scoring/leadScoring";
 import { randomUUID } from "crypto";
 
 const hasSupabase = !!(
@@ -30,6 +31,9 @@ export async function POST(req: NextRequest) {
     const leadId = randomUUID();
     const eventId = randomUUID();
 
+    // Score the lead (pure function, no I/O)
+    const score = scoreLeadData(data);
+
     const ipAddress =
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
     const userAgent = req.headers.get("user-agent") ?? null;
@@ -53,6 +57,8 @@ export async function POST(req: NextRequest) {
         landing_page: body.landing_page ?? null,
         ip_address: ipAddress,
         user_agent: userAgent,
+        quality_score: score.total,
+        quality_grade: score.grade,
       });
       if (error) {
         console.error("[supabase] insert error:", error);
@@ -65,7 +71,7 @@ export async function POST(req: NextRequest) {
     // Emails + conversion event – errors only logged, never 500
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://autarkiejetzt.de";
     await Promise.allSettled([
-      sendLeadNotification({ ...data, id: leadId }),
+      sendLeadNotification({ ...data, id: leadId }, score),
       sendLeadConfirmation(data),
       sendConversionEvent({
         eventName: "Lead",

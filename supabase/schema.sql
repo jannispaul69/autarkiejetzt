@@ -44,7 +44,11 @@ CREATE TABLE IF NOT EXISTS leads (
 
   -- Status workflow
   status              TEXT        NOT NULL DEFAULT 'new'
-                      CHECK (status IN ('new', 'contacted', 'qualified', 'sold', 'disqualified'))
+                      CHECK (status IN ('new', 'contacted', 'qualified', 'sold', 'disqualified')),
+
+  -- AI scoring (computed at insert time)
+  quality_score       INTEGER     CHECK (quality_score BETWEEN 0 AND 100),
+  quality_grade       TEXT        CHECK (quality_grade IN ('A', 'B', 'C'))
 );
 
 -- Form events table (drop-off tracking per step)
@@ -82,6 +86,13 @@ CREATE POLICY "auth_select_leads"
 
 CREATE POLICY "auth_select_form_events"
   ON form_events FOR SELECT TO authenticated USING (true);
+
+-- ============================================================
+-- Quality scoring columns (migration for existing installations)
+-- ============================================================
+
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS quality_score INTEGER CHECK (quality_score BETWEEN 0 AND 100);
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS quality_grade TEXT CHECK (quality_grade IN ('A', 'B', 'C'));
 
 -- ============================================================
 -- Deletion log table (DSGVO Art. 17 compliance)
