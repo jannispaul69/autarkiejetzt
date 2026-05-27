@@ -151,7 +151,7 @@ export default function Step6Contact({ onFinalSubmit, onBack }: Props) {
           {
             name: "consent_data_sharing" as const,
             label:
-              "Ich willige ein, dass meine Angaben an einen passenden Solar-Installateur aus meiner Region zur Kontaktaufnahme weitergegeben werden. Diese Einwilligung kann ich jederzeit widerrufen.",
+              "Ich willige gemäß Art. 6 Abs. 1 lit. a DSGVO ein, dass meine Angaben zur Vermittlung einer Photovoltaik-Beratung an einen einzigen regionalen Fachbetrieb weitergegeben werden. Diese Einwilligung kann ich jederzeit mit Wirkung für die Zukunft per E-Mail an anfrage@autarkiejetzt.de widerrufen.",
           },
           {
             name: "consent_privacy" as const,

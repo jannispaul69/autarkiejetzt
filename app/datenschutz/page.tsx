@@ -41,19 +41,21 @@ export default function DatenschutzPage() {
         </h1>
         <p className="text-sm text-brand-text-muted mb-10">Stand: Mai 2026</p>
 
-        <Section title="§ 1 Verantwortlicher">
-          <p>
-            Verantwortlicher im Sinne der Datenschutz-Grundverordnung
-            (DSGVO) ist:
-          </p>
+        <Section title="1. Verantwortlicher">
           <p>
             <strong className="text-brand-text font-medium">
               Schwietz Holding UG (haftungsbeschränkt)
             </strong>
             <br />
-            Grambkermoorer Landstr. 22G
+            Grambkermoorer Landstraße 22G, 28719 Bremen
             <br />
-            28719 Bremen
+            Telefon:{" "}
+            <a
+              href="tel:+4942140897615"
+              className="text-brand-primary hover:underline focus-visible:outline-none focus-visible:underline"
+            >
+              0421 40897615
+            </a>
             <br />
             E-Mail:{" "}
             <a
@@ -62,296 +64,347 @@ export default function DatenschutzPage() {
             >
               anfrage@autarkiejetzt.de
             </a>
-            <br />
-            Telefon: [TELEFON_PLATZHALTER]
           </p>
         </Section>
 
-        <Section title="§ 2 Welche Daten wir erheben">
+        <Section title="2. Grundsätze der Datenverarbeitung">
           <p>
-            Beim Ausfüllen des Beratungsformulars auf autarkiejetzt.de
-            erheben wir folgende personenbezogene Daten:
+            Wir verarbeiten personenbezogene Daten nur, soweit dies zur
+            Bereitstellung unserer Leistungen erforderlich ist und eine
+            Rechtsgrundlage nach Art. 6 DSGVO vorliegt. Wir erheben
+            keine Daten, die über den für die Leistungserbringung
+            notwendigen Umfang hinausgehen.
           </p>
-          <ul className="list-disc list-inside space-y-1 ml-1">
-            <li>Name und Vorname</li>
-            <li>Anschrift (Straße, PLZ, Ort)</li>
-            <li>Telefonnummer</li>
-            <li>E-Mail-Adresse</li>
-            <li>
-              Informationen zur Immobilie: Wohnsituation, Gebäudetyp,
-              Dachausrichtung, jährlicher Stromverbrauch, gewünschter
-              Zeithorizont und Motivation
-            </li>
-          </ul>
-          <p>
-            Zusätzlich werden beim Aufruf unserer Website automatisch
-            technische Daten erfasst:
-          </p>
-          <ul className="list-disc list-inside space-y-1 ml-1">
-            <li>IP-Adresse (anonymisiert gespeichert)</li>
-            <li>Browser-Typ und -Version</li>
-            <li>Betriebssystem</li>
-            <li>Referrer-URL</li>
-            <li>Datum und Uhrzeit des Zugriffs</li>
-            <li>UTM-Parameter (Kampagnentracking)</li>
-          </ul>
         </Section>
 
-        <Section title="§ 3 Zweck und Rechtsgrundlage der Verarbeitung">
+        <Section title="3. Welche Daten wir erheben">
           <p>
-            Die erhobenen Daten werden ausschließlich zum Zweck der
-            Vermittlung einer kostenlosen Photovoltaik-Beratung durch
-            einen regionalen Fachbetrieb verarbeitet.
+            Beim Ausfüllen unseres Beratungsformulars erheben wir:
+          </p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Kontaktdaten:
+            </strong>{" "}
+            Vor- und Nachname, Postanschrift, Telefonnummer,
+            E-Mail-Adresse.
+          </p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Objektdaten:
+            </strong>{" "}
+            Wohnsituation (Eigentümer/Mieter), Gebäudetyp,
+            Dachausrichtung, Stromverbrauch, gewünschter
+            Umsetzungszeitraum, Hauptmotivation.
+          </p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Technische Daten:
+            </strong>{" "}
+            IP-Adresse, Browser-Informationen, Zeitstempel,
+            Referrer-URL, UTM-Parameter (Herkunft der Anfrage).
+          </p>
+        </Section>
+
+        <Section title="4. Zweck und Rechtsgrundlage der Verarbeitung">
+          <p>
+            Wir verarbeiten Ihre Daten ausschließlich zum Zweck der
+            Vermittlung einer kostenlosen und unverbindlichen
+            Photovoltaik-Beratung durch einen regionalen Fachbetrieb.
           </p>
           <p>
             <strong className="text-brand-text font-medium">
               Rechtsgrundlage:
             </strong>{" "}
-            Art. 6 Abs. 1 lit. a DSGVO (Einwilligung). Die Einwilligung
-            erfolgt ausdrücklich durch das Aktivieren der Checkbox im
-            Beratungsformular vor dem Absenden. Ohne diese Einwilligung
-            ist eine Übermittlung der Anfrage nicht möglich.
+            Art. 6 Abs. 1 lit. a DSGVO (ausdrückliche Einwilligung).
+            Die Einwilligung erteilen Sie durch das aktive Setzen der
+            Checkboxen im Formular vor dem Absenden.
           </p>
         </Section>
 
-        <Section title="§ 4 Weitergabe an Dritte">
+        <Section title="5. Weitergabe Ihrer Daten an Dritte">
           <p>
-            Nach Eingang einer vollständigen Anfrage wird der Datensatz
-            exklusiv an einen einzigen regionalen
-            Photovoltaik-Installateur weitergegeben. Eine
-            Mehrfachweitergabe oder der Verkauf der Daten an weitere
-            Dritte findet nicht statt.
+            Nach Eingang Ihrer Anfrage wird Ihr Datensatz
+            ausschließlich an einen einzigen regionalen
+            Photovoltaik-Fachbetrieb weitergegeben. Es findet
+            kein Mehrfachverkauf statt, und es erfolgt keine
+            Weitergabe an weitere Dritte.
           </p>
           <p>
-            Mit der Datenweitergabe wird der empfangende Fachbetrieb
-            eigenständiger Verantwortlicher im Sinne der DSGVO für die
+            Mit der Weitergabe wird dieser Fachbetrieb eigenständiger
+            Verantwortlicher im Sinne von Art. 4 Nr. 7 DSGVO für die
             weitere Verarbeitung Ihrer Daten im Rahmen der
             Beratungsanbahnung.
           </p>
-          <p>
-            Eine Übermittlung in Drittländer findet im Rahmen der
-            Datenweitergabe an den Fachbetrieb nicht statt. Für die
-            eingesetzten Dienstleister gilt § 5 dieser Erklärung.
-          </p>
         </Section>
 
-        <Section title="§ 5 Eingesetzte Dienstleister (Auftragsverarbeiter)">
+        <Section title="6. Eingesetzte Dienstleister">
           <p>
-            Wir setzen folgende Dienstleister ein, mit denen
-            Auftragsverarbeitungsverträge (AVV) gemäß Art. 28 DSGVO
-            abgeschlossen wurden:
+            Zur Bereitstellung unserer Dienste setzen wir folgende
+            Auftragsverarbeiter gemäß Art. 28 DSGVO ein:
           </p>
-          <ul className="list-disc list-inside space-y-2 ml-1">
-            <li>
-              <strong className="text-brand-text font-medium">
-                Vercel Inc.
-              </strong>{" "}
-              (Hosting, USA) – Datenübermittlung in die USA auf
-              Grundlage von Standardvertragsklauseln gemäß Art. 46
-              DSGVO.
-            </li>
-            <li>
-              <strong className="text-brand-text font-medium">
-                Supabase Inc.
-              </strong>{" "}
-              (Datenbank) – Datenspeicherung in der EU-Region Frankfurt
-              (AWS eu-central-1). EU-Hosting ohne Drittlandübermittlung.
-            </li>
-            <li>
-              <strong className="text-brand-text font-medium">
-                Resend Inc.
-              </strong>{" "}
-              (E-Mail-Versand, USA) – Datenübermittlung in die USA auf
-              Grundlage von Standardvertragsklauseln gemäß Art. 46
-              DSGVO. Verarbeitung beschränkt auf E-Mail-Adresse und
-              Name des Anfragenden.
-            </li>
-            <li>
-              <strong className="text-brand-text font-medium">
-                Meta Platforms Ireland Ltd.
-              </strong>{" "}
-              (Marketing/Analytics via Meta Pixel) – Einbindung nur bei
-              ausdrücklicher Einwilligung über den Cookie Banner.
-              Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO. Weitere
-              Informationen:{" "}
-              <a
-                href="https://www.facebook.com/privacy/policy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand-primary hover:underline focus-visible:outline-none focus-visible:underline"
-              >
-                https://www.facebook.com/privacy/policy
-              </a>
-            </li>
-          </ul>
-        </Section>
-
-        <Section title="§ 6 Speicherdauer">
           <p>
-            Lead-Daten (Formularinhalte) werden nach Abschluss des
-            Vermittlungsvorgangs, spätestens jedoch nach{" "}
             <strong className="text-brand-text font-medium">
-              24 Monaten
-            </strong>
-            , gelöscht, sofern keine gesetzlichen
-            Aufbewahrungspflichten (insbesondere handels- und
-            steuerrechtliche Fristen) entgegenstehen.
+              Vercel Inc.
+            </strong>{" "}
+            (Hosting) – 340 Pine Street, Suite 701, San Francisco,
+            CA 94104, USA. Datenübermittlung in die USA auf Basis von
+            Standardvertragsklauseln (Art. 46 Abs. 2 lit. c DSGVO).
           </p>
           <p>
-            Technische Zugriffsdaten (Server-Logs) werden nach 30 Tagen
-            automatisch gelöscht.
-          </p>
-        </Section>
-
-        <Section title="§ 7 Ihre Rechte als betroffene Person">
-          <p>
-            Ihnen stehen gemäß DSGVO folgende Rechte zu:
-          </p>
-          <ul className="list-disc list-inside space-y-1 ml-1">
-            <li>
-              <strong className="text-brand-text font-medium">
-                Auskunft
-              </strong>{" "}
-              (Art. 15 DSGVO): Recht auf Auskunft über die zu Ihrer
-              Person gespeicherten Daten.
-            </li>
-            <li>
-              <strong className="text-brand-text font-medium">
-                Berichtigung
-              </strong>{" "}
-              (Art. 16 DSGVO): Recht auf Korrektur unrichtiger Daten.
-            </li>
-            <li>
-              <strong className="text-brand-text font-medium">
-                Löschung
-              </strong>{" "}
-              (Art. 17 DSGVO): Recht auf Löschung Ihrer Daten,
-              soweit keine gesetzlichen Aufbewahrungspflichten
-              entgegenstehen.
-            </li>
-            <li>
-              <strong className="text-brand-text font-medium">
-                Einschränkung der Verarbeitung
-              </strong>{" "}
-              (Art. 18 DSGVO).
-            </li>
-            <li>
-              <strong className="text-brand-text font-medium">
-                Datenübertragbarkeit
-              </strong>{" "}
-              (Art. 20 DSGVO).
-            </li>
-            <li>
-              <strong className="text-brand-text font-medium">
-                Widerspruch
-              </strong>{" "}
-              (Art. 21 DSGVO): Recht auf Widerspruch gegen die
-              Verarbeitung.
-            </li>
-            <li>
-              <strong className="text-brand-text font-medium">
-                Widerruf der Einwilligung
-              </strong>{" "}
-              (Art. 7 Abs. 3 DSGVO): Recht auf jederzeitigen Widerruf
-              einer erteilten Einwilligung ohne Angabe von Gründen.
-            </li>
-          </ul>
-          <p>
-            Zur Geltendmachung Ihrer Rechte wenden Sie sich bitte per
-            E-Mail an:{" "}
-            <a
-              href="mailto:anfrage@autarkiejetzt.de"
-              className="text-brand-primary hover:underline focus-visible:outline-none focus-visible:underline"
-            >
-              anfrage@autarkiejetzt.de
-            </a>
-          </p>
-          <p>
-            Sie haben zudem das Recht, sich bei der zuständigen
-            Datenschutzaufsichtsbehörde zu beschweren:{" "}
             <strong className="text-brand-text font-medium">
-              Der Landesbeauftragte für Datenschutz und
-              Informationsfreiheit der Freien Hansestadt Bremen
-            </strong>
-            , Arndtstraße 1, 27570 Bremerhaven,{" "}
+              Supabase Inc.
+            </strong>{" "}
+            (Datenbankhosting) – 970 Toa Payoh North, Singapur. Unsere
+            Datenbank wird in der Region eu-central-1 (Frankfurt,
+            Deutschland) betrieben – Daten verlassen die EU nicht.
+          </p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Resend Inc.
+            </strong>{" "}
+            (E-Mail-Versand) – 2261 Market Street #5202, San Francisco,
+            CA 94114, USA. Datenübermittlung in die USA auf Basis von
+            Standardvertragsklauseln (Art. 46 Abs. 2 lit. c DSGVO).
+          </p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Meta Platforms Ireland Ltd.
+            </strong>{" "}
+            (Meta Pixel) – 4 Grand Canal Square, Dublin 2, Irland. Nur
+            bei erteilter Cookie-Einwilligung aktiv. Weitere
+            Informationen:{" "}
             <a
-              href="https://www.datenschutz.bremen.de"
+              href="https://www.facebook.com/privacy/policy"
               target="_blank"
               rel="noopener noreferrer"
               className="text-brand-primary hover:underline focus-visible:outline-none focus-visible:underline"
             >
-              www.datenschutz.bremen.de
+              https://www.facebook.com/privacy/policy
             </a>
           </p>
         </Section>
 
-        <Section title="§ 8 Widerruf der Einwilligung">
+        <Section title="7. Speicherdauer">
           <p>
-            Die mit dem Formular erteilte Einwilligung zur
-            Datenweitergabe an einen Photovoltaik-Fachbetrieb kann
-            jederzeit mit Wirkung für die Zukunft widerrufen werden.
+            Ihre Lead-Daten werden nach Abschluss des
+            Vermittlungsvorgangs, spätestens nach{" "}
+            <strong className="text-brand-text font-medium">
+              24 Monaten
+            </strong>
+            , gelöscht – sofern keine gesetzlichen
+            Aufbewahrungspflichten entgegenstehen.
           </p>
           <p>
-            Bitte senden Sie Ihren Widerruf per E-Mail an{" "}
+            Technische Protokolldaten (IP-Adresse, Zeitstempel) werden
+            nach spätestens 30 Tagen gelöscht.
+          </p>
+        </Section>
+
+        <Section title="8. Ihre Rechte als betroffene Person">
+          <p>Sie haben das Recht auf:</p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Auskunft
+            </strong>{" "}
+            (Art. 15 DSGVO): Welche Daten wir von Ihnen gespeichert
+            haben.
+          </p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Berichtigung
+            </strong>{" "}
+            (Art. 16 DSGVO): Korrektur unrichtiger Daten.
+          </p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Löschung
+            </strong>{" "}
+            (Art. 17 DSGVO): Löschung Ihrer Daten, sofern keine
+            gesetzliche Aufbewahrungspflicht besteht.
+          </p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Einschränkung
+            </strong>{" "}
+            (Art. 18 DSGVO): Einschränkung der Verarbeitung Ihrer Daten.
+          </p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Datenübertragbarkeit
+            </strong>{" "}
+            (Art. 20 DSGVO): Erhalt Ihrer Daten in einem gängigen
+            Format.
+          </p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Widerspruch
+            </strong>{" "}
+            (Art. 21 DSGVO): Widerspruch gegen die Verarbeitung.
+          </p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Widerruf der Einwilligung
+            </strong>{" "}
+            (Art. 7 Abs. 3 DSGVO): Sie können Ihre Einwilligung
+            jederzeit mit Wirkung für die Zukunft widerrufen. Der
+            Widerruf berührt nicht die Rechtmäßigkeit der bis dahin
+            erfolgten Verarbeitung.
+          </p>
+          <p>
+            Zur Ausübung Ihrer Rechte wenden Sie sich per E-Mail an:{" "}
             <a
               href="mailto:anfrage@autarkiejetzt.de"
               className="text-brand-primary hover:underline focus-visible:outline-none focus-visible:underline"
             >
               anfrage@autarkiejetzt.de
-            </a>{" "}
-            unter Angabe Ihrer bei der Anfrage verwendeten E-Mail-Adresse.
+            </a>
           </p>
           <p>
-            Der Widerruf berührt nicht die Rechtmäßigkeit der aufgrund
-            der Einwilligung bis zum Widerruf erfolgten Verarbeitung.
-            Bitte beachten Sie, dass eine bereits erfolgte Weitergabe
-            an den Fachbetrieb nicht rückgängig gemacht werden kann.
+            Wir antworten innerhalb von 30 Tagen (Art. 12 DSGVO).
           </p>
         </Section>
 
-        <Section title="§ 9 Cookies und Tracking">
+        <Section title="9. Widerruf der Einwilligung zur Datenweitergabe">
+          <p>
+            Haben Sie in die Weitergabe Ihrer Daten an einen
+            Photovoltaik-Fachbetrieb eingewilligt, können Sie diese
+            Einwilligung jederzeit widerrufen:
+          </p>
+          <p>
+            Per E-Mail an:{" "}
+            <a
+              href="mailto:anfrage@autarkiejetzt.de?subject=Widerruf%20Einwilligung%20Datenweitergabe"
+              className="text-brand-primary hover:underline focus-visible:outline-none focus-visible:underline"
+            >
+              anfrage@autarkiejetzt.de
+            </a>
+            <br />
+            Betreff: „Widerruf Einwilligung Datenweitergabe"
+            <br />
+            Bitte geben Sie Ihren Namen und Ihre E-Mail-Adresse an.
+          </p>
+          <p>
+            Wir löschen Ihren Datensatz umgehend und informieren den
+            ggf. bereits benachrichtigten Fachbetrieb über den Widerruf.
+          </p>
+        </Section>
+
+        <Section title="10. Recht auf Datenlöschung">
+          <p>
+            Sie haben das Recht, die Löschung Ihrer personenbezogenen
+            Daten zu verlangen, wenn:
+          </p>
+          <ul className="list-disc list-inside space-y-1 ml-1">
+            <li>der Zweck der Verarbeitung entfallen ist,</li>
+            <li>Sie Ihre Einwilligung widerrufen haben,</li>
+            <li>die Daten unrechtmäßig verarbeitet wurden.</li>
+          </ul>
+          <p>
+            Löschungsanfragen richten Sie an:{" "}
+            <a
+              href="mailto:anfrage@autarkiejetzt.de"
+              className="text-brand-primary hover:underline focus-visible:outline-none focus-visible:underline"
+            >
+              anfrage@autarkiejetzt.de
+            </a>
+            . Wir bestätigen die Löschung innerhalb von 30 Tagen.
+          </p>
+        </Section>
+
+        <Section title="11. Cookies und Tracking">
           <p>
             <strong className="text-brand-text font-medium">
               Technisch notwendig (keine Einwilligung erforderlich):
             </strong>
           </p>
-          <ul className="list-disc list-inside space-y-1 ml-1">
-            <li>
-              <code className="text-sm bg-brand-background px-1.5 py-0.5 rounded">
-                aj_form_state
-              </code>{" "}
-              – localStorage-Eintrag zur Zwischenspeicherung des
-              Formularfortschritts. Kein Cookie, keine
-              Server-Übertragung. Wird nach dem Absenden des Formulars
-              automatisch gelöscht.
-            </li>
-          </ul>
+          <p>
+            Wir nutzen den localStorage Ihres Browsers ausschließlich
+            zur temporären Speicherung Ihrer Formulareingaben während
+            des Ausfüllvorgangs (Schlüssel:{" "}
+            <code className="text-sm bg-brand-background px-1.5 py-0.5 rounded">
+              aj_form_state
+            </code>
+            ). Diese Daten verlassen Ihr Gerät nicht und werden nach dem
+            Absenden des Formulars automatisch gelöscht.
+          </p>
           <p>
             <strong className="text-brand-text font-medium">
-              Marketing (nur mit Einwilligung):
+              Nur mit Ihrer Einwilligung:
             </strong>
           </p>
-          <ul className="list-disc list-inside space-y-1 ml-1">
-            <li>
-              <strong className="text-brand-text font-medium">
-                Meta Pixel
-              </strong>{" "}
-              von Meta Platforms Ireland Ltd., 4 Grand Canal Square,
-              Dublin 2, Irland – Zur Messung und Optimierung unserer
-              Werbekampagnen auf Facebook und Instagram.
-              Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO.
-            </li>
-          </ul>
           <p>
-            Die Einwilligung für Marketing-Cookies kann jederzeit über
-            den Cookie Banner auf dieser Website widerrufen werden.
-            Klicken Sie dazu im Footer auf{" "}
+            <strong className="text-brand-text font-medium">
+              Meta Pixel
+            </strong>{" "}
+            von Meta Platforms Ireland Ltd., 4 Grand Canal Square,
+            Dublin 2, Irland – zur Messung und Optimierung unserer
+            Werbekampagnen auf Facebook und Instagram. Das Pixel wird
+            nur nach Ihrer ausdrücklichen Einwilligung über unseren
+            Cookie Banner geladen. Rechtsgrundlage: Art. 6 Abs. 1
+            lit. a DSGVO.
+          </p>
+          <p>
+            Cookie-Einwilligung widerrufen: Klicken Sie im Footer auf{" "}
             <strong className="text-brand-text font-medium">
               „Cookie-Einstellungen"
-            </strong>
-            .
+            </strong>{" "}
+            und wählen Sie „Nur notwendige Cookies".
           </p>
         </Section>
+
+        <Section title="12. Beschwerderecht">
+          <p>
+            Sie haben das Recht, sich bei der zuständigen
+            Datenschutzaufsichtsbehörde zu beschweren:
+          </p>
+          <p>
+            <strong className="text-brand-text font-medium">
+              Der Landesbeauftragte für Datenschutz und
+              Informationsfreiheit der Freien Hansestadt Bremen
+            </strong>
+            <br />
+            Arndtstraße 1, 27570 Bremerhaven
+            <br />
+            E-Mail:{" "}
+            <a
+              href="mailto:office@datenschutz.bremen.de"
+              className="text-brand-primary hover:underline focus-visible:outline-none focus-visible:underline"
+            >
+              office@datenschutz.bremen.de
+            </a>
+            <br />
+            Tel.: 0421 361-2010
+          </p>
+        </Section>
+
+        {/* Datenlöschungs-Box */}
+        <div
+          className="mt-4 mb-12 rounded-2xl border p-6 sm:p-8"
+          style={{
+            backgroundColor: "rgba(10, 77, 60, 0.05)",
+            borderColor: "rgba(10, 77, 60, 0.20)",
+          }}
+        >
+          <h2 className="font-heading text-xl font-bold text-brand-text mb-2 tracking-tight">
+            Ihre Datenschutzrechte ausüben
+          </h2>
+          <p className="text-brand-text-muted leading-[1.8] mb-5">
+            Für Auskunft, Berichtigung, Löschung oder Widerruf Ihrer
+            Einwilligung – wir helfen Ihnen schnell und unkompliziert
+            weiter.
+          </p>
+          <a
+            href="mailto:anfrage@autarkiejetzt.de"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white transition-all duration-200 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            style={{ backgroundColor: "#0A4D3C" }}
+          >
+            anfrage@autarkiejetzt.de schreiben
+          </a>
+          <p className="mt-4 text-xs text-brand-text-muted">
+            Antwort innerhalb von 30 Tagen (Art. 12 DSGVO) · Widerruf
+            der Einwilligung jederzeit möglich
+          </p>
+        </div>
       </div>
     </main>
   );
