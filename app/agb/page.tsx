@@ -50,7 +50,7 @@ export default function AgbPage() {
             </strong>{" "}
             der Schwietz Holding UG (haftungsbeschränkt),
             Grambkermoorer Landstraße 22G, 28719 Bremen (nachfolgend
-            „Anbieter").
+            &bdquo;Anbieter&rdquo;).
           </p>
           <p>
             Mit dem Absenden des Beratungsformulars erklärt der Nutzer

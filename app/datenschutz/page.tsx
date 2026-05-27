@@ -279,7 +279,7 @@ export default function DatenschutzPage() {
               anfrage@autarkiejetzt.de
             </a>
             <br />
-            Betreff: „Widerruf Einwilligung Datenweitergabe"
+            Betreff: &bdquo;Widerruf Einwilligung Datenweitergabe&rdquo;
             <br />
             Bitte geben Sie Ihren Namen und Ihre E-Mail-Adresse an.
           </p>
@@ -346,9 +346,9 @@ export default function DatenschutzPage() {
           <p>
             Cookie-Einwilligung widerrufen: Klicken Sie im Footer auf{" "}
             <strong className="text-brand-text font-medium">
-              „Cookie-Einstellungen"
+              &bdquo;Cookie-Einstellungen&rdquo;
             </strong>{" "}
-            und wählen Sie „Nur notwendige Cookies".
+            und wählen Sie &bdquo;Nur notwendige Cookies&rdquo;.
           </p>
         </Section>
 
