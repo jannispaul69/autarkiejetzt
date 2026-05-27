@@ -1,10 +1,32 @@
+import Image from "next/image";
+import Link from "next/link";
 import { Check, Shield, Clock } from "lucide-react";
 import MultiStepForm from "@/components/form/MultiStepForm";
 
 export default function Hero() {
   return (
     <section className="bg-brand-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-24">
+
+      {/* Logo nav */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-8">
+        <Link
+          href="/"
+          className="inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 rounded-sm"
+          aria-label="Autarkie Jetzt – zur Startseite"
+        >
+          <Image
+            src="/logo.png"
+            alt="Autarkie Jetzt"
+            width={1693}
+            height={929}
+            className="h-9 w-auto"
+            priority
+          />
+        </Link>
+      </div>
+
+      {/* Hero grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 lg:items-start">
 
           {/* Left: Copy */}
@@ -60,10 +82,27 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right: Form */}
-          <div id="hero-form">
-            <MultiStepForm />
+          {/* Right: Hero image (desktop only) + Form */}
+          <div className="flex flex-col gap-6">
+
+            {/* Hero image – hidden on mobile */}
+            <div className="relative hidden lg:block h-[260px] rounded-2xl overflow-hidden shadow-md">
+              <Image
+                src="/hero.jpg"
+                alt="Haus mit Solaranlage auf dem Dach"
+                fill
+                className="object-cover object-center"
+                sizes="(max-width: 1280px) 50vw, 640px"
+                priority
+              />
+            </div>
+
+            {/* Form */}
+            <div id="hero-form">
+              <MultiStepForm />
+            </div>
           </div>
+
         </div>
       </div>
     </section>

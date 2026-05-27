@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import CookieSettingsLink from "@/components/CookieSettingsLink";
 
@@ -13,12 +14,20 @@ export default function Footer() {
 
           {/* Col 1: Brand */}
           <div className="flex flex-col gap-4">
-            <span
-              className="font-heading text-xl font-extrabold"
-              style={{ color: "#F4B400" }}
+            <Link
+              href="/"
+              className="inline-flex items-center self-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#111] rounded-sm"
+              aria-label="Autarkie Jetzt – zur Startseite"
             >
-              Autarkie Jetzt ☀️
-            </span>
+              <Image
+                src="/logo.png"
+                alt="Autarkie Jetzt"
+                width={1693}
+                height={929}
+                className="h-9 w-auto"
+                style={{ filter: "brightness(0) invert(1)" }}
+              />
+            </Link>
             <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
               Wir verbinden Hausbesitzer mit geprüften Solar-Fachbetrieben aus ihrer Region – kostenlos und unverbindlich.
             </p>
