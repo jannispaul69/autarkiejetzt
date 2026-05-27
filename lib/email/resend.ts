@@ -497,7 +497,7 @@ export async function sendSmsCodePendingEmail(lead: Pick<LeadFormData, "first_na
             <td style="padding:28px 32px 8px">
               <p style="margin:0 0 6px;font-size:17px;font-weight:600;color:#111827">Hallo ${lead.first_name},</p>
               <p style="margin:0;font-size:15px;color:#4b5563;line-height:1.7">
-                fast geschafft! Wir haben dir soeben einen <strong>4-stelligen Bestätigungscode</strong>
+                fast geschafft! Wir haben dir soeben einen <strong>6-stelligen Bestätigungscode</strong>
                 per SMS an <strong>${maskedPhone}</strong> gesendet.
               </p>
             </td>

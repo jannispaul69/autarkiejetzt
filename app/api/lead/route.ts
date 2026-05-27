@@ -4,7 +4,6 @@ import { sendSmsCodePendingEmail } from "@/lib/email/resend";
 import { sendConversionEvent } from "@/lib/meta/conversion-api";
 import { scoreLeadData } from "@/lib/scoring/leadScoring";
 import { normalizePhone, maskPhone } from "@/lib/twilio/client";
-import { sendVerificationCode } from "@/lib/twilio/verify";
 import { randomUUID } from "crypto";
 
 const hasSupabase = !!(
@@ -98,11 +97,9 @@ export async function POST(req: NextRequest) {
         expires_at: expiresAt,
       });
 
-      try {
-        await sendVerificationCode(normalizedPhone, "sms");
-      } catch (verifyErr) {
-        console.error("[lead] Twilio Verify send failed (non-fatal):", verifyErr);
-      }
+      // Note: we do NOT call sendVerificationCode here.
+      // The verify page always triggers the first code send (user chooses channel).
+      // This prevents a double-send when the user selects "Anruf" on the verify page.
     }
 
     // ── Post-submit emails + Meta conversion event ───────────────────────────
