@@ -327,3 +327,7 @@ ALTER TABLE buyers ADD COLUMN IF NOT EXISTS notify_daily_summary  BOOLEAN DEFAUL
 -- ── Solar-check: full address field ──────────────────────────────────────────
 -- Run this in your Supabase SQL editor:
 -- ALTER TABLE leads ADD COLUMN IF NOT EXISTS street text;
+
+-- ── Meta Lead Ads: external dedup ID ─────────────────────────────────────────
+-- Run this in your Supabase SQL editor:
+-- ALTER TABLE leads ADD COLUMN IF NOT EXISTS external_id text UNIQUE;

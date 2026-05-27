@@ -15,6 +15,10 @@ const SOURCE_CONFIG: Record<string, { label: string; className: string }> = {
     label: "Solar-Check",
     className: "bg-blue-50 text-blue-700 border-blue-200",
   },
+  "meta-lead-ad": {
+    label: "Meta Lead Ad",
+    className: "bg-violet-50 text-violet-700 border-violet-200",
+  },
 };
 
 export default function SourceBadge({ source }: Props) {
