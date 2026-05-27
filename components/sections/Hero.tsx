@@ -19,7 +19,7 @@ export default function Hero() {
             alt="Autarkie Jetzt"
             width={1693}
             height={929}
-            className="h-9 w-auto"
+            className="h-8 w-auto"
             priority
           />
         </Link>
