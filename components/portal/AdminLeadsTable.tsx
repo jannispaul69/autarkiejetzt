@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import ScoreBadge from "./ScoreBadge";
 import StatusBadge from "./StatusBadge";
+import SourceBadge from "./SourceBadge";
 import type { Lead } from "@/lib/portal/types";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
@@ -174,6 +175,7 @@ export default function AdminLeadsTable({ rows, buyers }: Props) {
                 "Name",
                 "PLZ",
                 "Score",
+                "Quelle",
                 "Status",
                 "Käufer",
                 "Datum",
@@ -211,6 +213,9 @@ export default function AdminLeadsTable({ rows, buyers }: Props) {
                     grade={r.lead.quality_grade}
                     score={r.lead.quality_score}
                   />
+                </td>
+                <td className="px-4 py-3">
+                  <SourceBadge source={r.lead.landing_page} />
                 </td>
                 <td className="px-4 py-3">
                   {r.assignment ? (

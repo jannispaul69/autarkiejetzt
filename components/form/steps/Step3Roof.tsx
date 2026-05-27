@@ -140,6 +140,17 @@ export default function Step3Roof({ onComplete, onBack, defaultValue }: Props) {
         ))}
       </motion.div>
 
+      {/* North-roof advisory */}
+      {selected === "north" && (
+        <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm leading-relaxed -mt-1">
+          <span aria-hidden="true" className="flex-shrink-0 mt-0.5">⚠️</span>
+          <span>
+            Norddächer haben weniger Solarpotenzial – eine Beratung lohnt sich trotzdem,
+            besonders bei großen Dachflächen.
+          </span>
+        </div>
+      )}
+
       <button
         type="button"
         onClick={() => selected && onComplete(selected)}

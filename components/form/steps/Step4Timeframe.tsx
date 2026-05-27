@@ -116,6 +116,16 @@ export default function Step4Timeframe({ onComplete, onBack, defaultValue }: Pro
         ))}
       </motion.div>
 
+      {/* info_only reassurance badge */}
+      {selected === "info_only" && (
+        <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-600 text-sm leading-relaxed -mt-1">
+          <span aria-hidden="true" className="flex-shrink-0 mt-0.5">ℹ️</span>
+          <span>
+            Kein Problem – du erhältst trotzdem eine kostenlose Ersteinschätzung.
+          </span>
+        </div>
+      )}
+
       <button
         type="button"
         onClick={() => selected && onComplete(selected)}

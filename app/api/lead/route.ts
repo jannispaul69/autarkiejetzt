@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { leadSchema } from "@/lib/validation/schemas";
-import { sendSmsCodePendingEmail } from "@/lib/email/resend";
+import { leadSchema, jetzLeadSchema } from "@/lib/validation/schemas";
+import { sendSmsCodePendingEmail, sendLeadNotification } from "@/lib/email/resend";
 import { sendConversionEvent } from "@/lib/meta/conversion-api";
-import { scoreLeadData } from "@/lib/scoring/leadScoring";
+import { scoreLeadData, gradeFromTotal, GRADE_SUMMARIES, type LeadScore } from "@/lib/scoring/leadScoring";
 import { normalizePhone, maskPhone } from "@/lib/twilio/client";
 import { randomUUID } from "crypto";
 
@@ -20,6 +20,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
+    // ── /jetzt fast-lane: minimal validation, immediate buyer notification ──
+    if (body.landing_page === "jetzt") {
+      return handleJetzLead(body);
+    }
+
     const parsed = leadSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
@@ -33,11 +38,22 @@ export async function POST(req: NextRequest) {
     const eventId = randomUUID();
 
     // Score the lead (pure function, no I/O)
-    const score = scoreLeadData(data, {
+    let score = scoreLeadData(data, {
       financing_type: body.financing_type,
       heating_type:   body.heating_type,
       street:         body.street ?? undefined,
     });
+
+    // info_only penalty: -15 quality points (low conversion intent signal)
+    if (data.timeframe === "info_only") {
+      const penalizedTotal = Math.max(0, score.total - 15);
+      score = {
+        ...score,
+        total:   penalizedTotal,
+        grade:   gradeFromTotal(penalizedTotal),
+        summary: GRADE_SUMMARIES[gradeFromTotal(penalizedTotal)],
+      };
+    }
 
     const ipAddress =
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
@@ -138,6 +154,91 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, leadId, requires_verification: true });
   } catch (err) {
     console.error("[lead] unhandled error:", err);
+    return NextResponse.json({ error: "Serverfehler" }, { status: 500 });
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// /jetzt fast-lane handler
+// Minimal fields, no phone verification, immediate buyer notification.
+// ─────────────────────────────────────────────────────────────────────────────
+async function handleJetzLead(body: Record<string, unknown>): Promise<NextResponse> {
+  try {
+    const parsed = jetzLeadSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Ungültige Eingabe" },
+        { status: 400 },
+      );
+    }
+
+    const { postal_code, phone, first_name } = parsed.data;
+    const leadId = randomUUID();
+
+    // Fixed grade B for /jetzt (minimal data context)
+    const jetzScore: LeadScore = {
+      total:     60,
+      grade:     "B",
+      breakdown: { roof: 12, consumption: 10, timeframe: 30, location: 6, completeness: 5 },
+      summary:   GRADE_SUMMARIES["B"],
+    };
+
+    if (hasSupabase) {
+      const { createServerClient } = await import("@/lib/supabase/server");
+      const supabase = createServerClient();
+      const { error } = await supabase.from("leads").insert({
+        id:                leadId,
+        first_name,
+        last_name:         "",
+        phone,
+        email:             "",
+        postal_code,
+        city:              null,
+        housing_type:      "owner_house",
+        annual_consumption:"unknown",
+        roof_orientation:  "unknown",
+        timeframe:         "immediate",
+        landing_page:      "jetzt",
+        quality_score:     jetzScore.total,
+        quality_grade:     jetzScore.grade,
+        consent_owner_adult:  true,
+        consent_data_sharing: true,
+        consent_privacy:      true,
+      });
+      if (error) {
+        console.error("[jetzt] supabase insert error:", error);
+        return NextResponse.json({ error: "Datenbankfehler" }, { status: 500 });
+      }
+
+      // Immediately notify buyer (no phone verification gate)
+      // Build minimal LeadFormData shape for the email template
+      const leadForEmail = {
+        id:                leadId,
+        first_name,
+        last_name:         "",
+        phone,
+        email:             "",
+        postal_code,
+        city:              undefined as string | undefined,
+        housing_type:      "owner_house" as const,
+        annual_consumption:"unknown" as const,
+        roof_orientation:  "unknown" as const,
+        timeframe:         "immediate" as const,
+        consent_owner_adult:  true as const,
+        consent_data_sharing: true as const,
+        consent_privacy:      true as const,
+      };
+
+      await sendLeadNotification(leadForEmail, jetzScore).catch((e) =>
+        console.error("[jetzt] notification email failed:", e),
+      );
+    } else {
+      console.warn("[jetzt mock] lead not persisted, id:", leadId);
+    }
+
+    return NextResponse.json({ success: true, leadId });
+  } catch (err) {
+    console.error("[jetzt] unhandled error:", err);
     return NextResponse.json({ error: "Serverfehler" }, { status: 500 });
   }
 }

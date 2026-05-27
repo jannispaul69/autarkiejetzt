@@ -74,7 +74,16 @@ export const scTimeframeMotivationSchema = z.object({
     .max(2, "Maximal 2 Motivationen"),
 });
 
-// Solar-check collects a full address (street required, city required)
+// ─── /jetzt ultra-simple LP schema ──────────────────────────────────────────
+// Only the minimum fields needed for a mobile quick-lead (no email, no last_name).
+export const jetzLeadSchema = z.object({
+  postal_code:          z.string().regex(/^\d{5}$/, "Bitte eine gültige PLZ eingeben"),
+  phone:                z.string().min(6).regex(/^[\+\d][\d\s\-\(\)]{5,25}$/, "Ungültige Telefonnummer"),
+  first_name:           z.string().min(1, "Vorname ist erforderlich"),
+  consent_data_sharing: z.literal(true, { error: "Zustimmung erforderlich" }),
+});
+
+// ─── Solar-check collects a full address (street required, city required)
 export const scLocationSchema = z.object({
   street:      z.string().min(3, "Bitte Straße und Hausnummer eingeben"),
   postal_code: z.string().regex(/^\d{5}$/, "Bitte eine gültige 5-stellige PLZ eingeben"),

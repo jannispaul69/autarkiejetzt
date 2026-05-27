@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ScoreBadge from "./ScoreBadge";
+import SourceBadge from "./SourceBadge";
 import { STATUS_LABELS } from "@/lib/portal/types";
 import type { AssignedLead, LeadStatus } from "@/lib/portal/types";
 import { toast } from "sonner";
@@ -300,6 +301,7 @@ export default function LeadsTable({ rows, showBuyer = false }: Props) {
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Name</th>
                 <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">PLZ</th>
                 <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Score</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Quelle</th>
                 {showBuyer && (
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Käufer</th>
                 )}
@@ -341,6 +343,9 @@ export default function LeadsTable({ rows, showBuyer = false }: Props) {
                   </td>
                   <td className="px-3 py-3">
                     <ScoreBadge grade={row.leads.quality_grade} score={row.leads.quality_score} />
+                  </td>
+                  <td className="px-3 py-3">
+                    <SourceBadge source={row.leads.landing_page} />
                   </td>
                   {showBuyer && (
                     <td className="px-3 py-3 text-gray-500 text-xs">{row.buyers?.company_name ?? "–"}</td>

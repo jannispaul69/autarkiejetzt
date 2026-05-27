@@ -120,6 +120,17 @@ export default function Step2Consumption({ onComplete, onBack, defaultValue }: P
         </div>
       </motion.div>
 
+      {/* Low-consumption encouragement */}
+      {selected === "under_3000" && (
+        <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-sm leading-relaxed -mt-1">
+          <span aria-hidden="true" className="flex-shrink-0 mt-0.5">💡</span>
+          <span>
+            Für kleinen Verbrauch empfehlen wir eine kompakte Anlage –
+            lohnt sich oft trotzdem!
+          </span>
+        </div>
+      )}
+
       <button
         type="button"
         onClick={() => selected && onComplete(selected)}

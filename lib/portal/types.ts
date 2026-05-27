@@ -51,6 +51,8 @@ export interface Lead {
   email: string;
   postal_code: string;
   city: string | null;
+  street: string | null;
+  landing_page: string | null;
   housing_type: string;
   annual_consumption: string;
   roof_orientation: string;

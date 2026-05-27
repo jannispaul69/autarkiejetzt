@@ -124,6 +124,12 @@ export default function MultiStepForm() {
     );
   }
 
+  // Show boost badge when: owner_house + south roof + immediate timeframe
+  const showBoostBadge =
+    formData.housing_type === "owner_house" &&
+    formData.roof_orientation === "south" &&
+    formData.timeframe === "immediate";
+
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-brand-border overflow-hidden">
       {/* Card Header */}
@@ -134,8 +140,31 @@ export default function MultiStepForm() {
         <p className="text-sm text-brand-text-muted mt-1">
           Schritt {currentStep} von {TOTAL_STEPS} – dauert 60 Sekunden
         </p>
-        <div className="mt-4">
-          <FormProgress currentStep={currentStep} totalSteps={TOTAL_STEPS} />
+
+        {/* High-potential boost chip — appears once owner_house + south + immediate are all set */}
+        <AnimatePresence>
+          {showBoostBadge && (
+            <motion.div
+              key="boost-badge"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
+                         bg-green-50 border border-green-200 text-green-700
+                         text-xs font-medium"
+            >
+              ✓ Sehr gutes Solarpotenzial in deiner Region!
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="mt-3">
+          <FormProgress
+            currentStep={currentStep}
+            totalSteps={TOTAL_STEPS}
+            highlight={showBoostBadge}
+          />
         </div>
       </div>
 

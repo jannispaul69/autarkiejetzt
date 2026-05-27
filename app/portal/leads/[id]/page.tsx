@@ -5,6 +5,7 @@ import PortalShell from "@/components/portal/PortalShell";
 import ScoreBadge from "@/components/portal/ScoreBadge";
 import CrmPanel from "@/components/portal/CrmPanel";
 import { ChevronLeft, Phone, Mail } from "lucide-react";
+import SourceBadge from "@/components/portal/SourceBadge";
 
 const HUMAN_LABELS: Record<string, Record<string, string>> = {
   housing_type: {
@@ -147,7 +148,11 @@ export default async function LeadDetailPage({
                 </a>
               </DataRow>
               <DataRow label="Adresse">
+                {lead.street && <span className="block">{lead.street}</span>}
                 {lead.postal_code} {lead.city ?? ""}
+              </DataRow>
+              <DataRow label="Quelle">
+                <SourceBadge source={lead.landing_page} />
               </DataRow>
               <DataRow label="Eingegangen">
                 {new Date(lead.created_at).toLocaleString("de-DE", {
