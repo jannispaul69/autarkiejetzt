@@ -60,13 +60,13 @@ const TIMEFRAME_SCORES: Record<string, number> = {
 // ---------------------------------------------------------------------------
 // Grade + summary
 // ---------------------------------------------------------------------------
-function gradeFromTotal(total: number): "A" | "B" | "C" {
+export function gradeFromTotal(total: number): "A" | "B" | "C" {
   if (total >= 80) return "A";
   if (total >= 55) return "B";
   return "C";
 }
 
-const GRADE_SUMMARIES: Record<"A" | "B" | "C", string> = {
+export const GRADE_SUMMARIES: Record<"A" | "B" | "C", string> = {
   A: "Hohe Abschlusswahrscheinlichkeit – sofort anrufen!",
   B: "Solider Lead mit gutem Potenzial.",
   C: "Eher informationssuchend, geringes Zeitfenster.",

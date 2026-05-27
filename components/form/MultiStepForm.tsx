@@ -106,13 +106,20 @@ export default function MultiStepForm() {
       body: JSON.stringify(payload),
     });
 
+    const body = await res.json().catch(() => ({}));
+
     if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
       throw new Error(body?.error ?? "Übermittlung fehlgeschlagen. Bitte versuche es erneut.");
     }
 
     clearStorage();
-    router.push("/danke");
+
+    // Store phone for masked display on verify page
+    try {
+      sessionStorage.setItem("aj_pending_phone", payload.phone ?? "");
+    } catch {}
+
+    router.push(`/danke/verifizieren?id=${body.leadId}`);
   }
 
   return (

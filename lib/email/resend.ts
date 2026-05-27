@@ -454,6 +454,100 @@ export async function sendLeadNotification(
   });
 }
 
+/**
+ * Pre-verification email: informs the lead that an SMS code is on its way.
+ * Sent immediately after form submission, before phone is verified.
+ */
+export async function sendSmsCodePendingEmail(lead: Pick<LeadFormData, "first_name" | "email">, maskedPhone: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn("[resend] RESEND_API_KEY not set – skipping SMS pending email");
+    return;
+  }
+  const resend = new Resend(apiKey);
+  const html = `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bestätigungscode unterwegs – Autarkie Jetzt</title>
+</head>
+<body style="margin:0;padding:0;background:#F0F0EB;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#F0F0EB;min-height:100vh">
+    <tr>
+      <td align="center" style="padding:32px 16px">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+               style="max-width:520px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.10)">
+          <tr>
+            <td style="background:#0A4D3C;padding:28px 32px">
+              <p style="margin:0 0 12px;font-size:13px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.55)">☀️ AUTARKIE JETZT</p>
+              <table cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td style="width:40px;vertical-align:middle">
+                    <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.15);font-size:20px;line-height:36px;text-align:center">📱</div>
+                  </td>
+                  <td style="padding-left:14px;vertical-align:middle">
+                    <p style="margin:0;font-size:20px;font-weight:700;color:#ffffff;line-height:1.25">Bestätigungscode unterwegs</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 32px 8px">
+              <p style="margin:0 0 6px;font-size:17px;font-weight:600;color:#111827">Hallo ${lead.first_name},</p>
+              <p style="margin:0;font-size:15px;color:#4b5563;line-height:1.7">
+                fast geschafft! Wir haben dir soeben einen <strong>4-stelligen Bestätigungscode</strong>
+                per SMS an <strong>${maskedPhone}</strong> gesendet.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 32px">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                     style="background:#F0FAF4;border:1px solid #B2DCCE;border-radius:8px">
+                <tr>
+                  <td style="padding:18px 20px">
+                    <p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#0A4D3C;text-transform:uppercase;letter-spacing:0.1em">Nächster Schritt</p>
+                    <p style="margin:0;font-size:14px;color:#374151;line-height:1.6">
+                      Gib den Code auf der Bestätigungsseite ein. Er ist <strong>10 Minuten</strong> gültig.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 32px 24px">
+              <p style="margin:0;font-size:13px;color:#9ca3af;line-height:1.6">
+                Falls du keine SMS erhalten hast, kannst du auf der Bestätigungsseite einen neuen Code anfordern.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 32px 22px;border-top:1px solid #EAEAE5;background:#FAFAF7">
+              <p style="margin:0;font-size:13px;color:#6b7280;line-height:1.6">
+                Mit sonnigen Grüßen,<br>
+                <strong style="color:#374151">Dein Autarkie-Jetzt-Team</strong>
+              </p>
+              <p style="margin:10px 0 0;font-size:11px;color:#9ca3af">Autarkie Jetzt · anfrage@autarkiejetzt.de</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  await resend.emails.send({
+    from: process.env.LEAD_NOTIFY_FROM ?? "leads@autarkiejetzt.de",
+    to: lead.email,
+    subject: "Dein Bestätigungscode ist unterwegs – Autarkie Jetzt",
+    html,
+  });
+}
+
 export async function sendLeadConfirmation(lead: LeadFormData) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {

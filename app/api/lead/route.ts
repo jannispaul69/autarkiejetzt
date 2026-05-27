@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { leadSchema } from "@/lib/validation/schemas";
-import { sendLeadNotification, sendLeadConfirmation } from "@/lib/email/resend";
+import { sendSmsCodePendingEmail } from "@/lib/email/resend";
 import { sendConversionEvent } from "@/lib/meta/conversion-api";
 import { scoreLeadData } from "@/lib/scoring/leadScoring";
+import { normalizePhone, maskPhone, sendSms } from "@/lib/twilio/client";
 import { randomUUID } from "crypto";
 
 const hasSupabase = !!(
@@ -78,11 +79,40 @@ export async function POST(req: NextRequest) {
       console.warn("[mock mode] Supabase not configured – lead not persisted. ID:", leadId);
     }
 
-    // Emails + conversion event – errors only logged, never 500
+    // ── Send SMS verification code ──────────────────────────────────────────
+    // The buyer notification email is withheld until phone is verified.
+    // On SMS failure: log and continue — user can resend from verify page.
+    if (hasSupabase) {
+      const normalizedPhone = normalizePhone(data.phone);
+      const verifyCode = Math.floor(1000 + Math.random() * 9000).toString();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+      const { createServerClient: getClient } = await import("@/lib/supabase/server");
+      const sbClient = getClient();
+
+      await sbClient.from("phone_verifications").insert({
+        lead_id:    leadId,
+        phone:      normalizedPhone,
+        code:       verifyCode,
+        expires_at: expiresAt,
+      });
+
+      try {
+        await sendSms(normalizedPhone, `Dein Autarkie Jetzt Code: ${verifyCode}. Gültig 10 Min.`);
+      } catch (smsErr) {
+        console.error("[lead] SMS send failed (non-fatal):", smsErr);
+      }
+    }
+
+    // ── Post-submit emails + Meta conversion event ───────────────────────────
+    // Notification to buyer is sent AFTER phone verification (in /api/verify/check).
+    // Here we only send: (1) "code is on its way" confirmation + (2) conversion event.
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://autarkiejetzt.de";
     await Promise.allSettled([
-      sendLeadNotification({ ...data, id: leadId }, score),
-      sendLeadConfirmation(data),
+      sendSmsCodePendingEmail(
+        { first_name: data.first_name, email: data.email },
+        maskPhone(data.phone),
+      ),
       sendConversionEvent({
         eventName: "Lead",
         eventId,
@@ -105,7 +135,7 @@ export async function POST(req: NextRequest) {
       });
     });
 
-    return NextResponse.json({ success: true, leadId });
+    return NextResponse.json({ success: true, leadId, requires_verification: true });
   } catch (err) {
     console.error("[lead] unhandled error:", err);
     return NextResponse.json({ error: "Serverfehler" }, { status: 500 });

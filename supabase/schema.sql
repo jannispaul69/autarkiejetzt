@@ -242,6 +242,30 @@ CREATE POLICY "admin_all_team"
   );
 
 -- ============================================================
+-- SMS Phone Verification
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS phone_verifications (
+  id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  lead_id     UUID        REFERENCES leads(id) ON DELETE CASCADE,
+  phone       TEXT        NOT NULL,
+  code        TEXT        NOT NULL,
+  expires_at  TIMESTAMPTZ NOT NULL,
+  verified_at TIMESTAMPTZ,
+  attempts    INTEGER     NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS pv_lead_id_idx ON phone_verifications (lead_id);
+CREATE INDEX IF NOT EXISTS pv_created_at_idx ON phone_verifications (created_at DESC);
+
+ALTER TABLE phone_verifications ENABLE ROW LEVEL SECURITY;
+-- Service role only – no anon access
+
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS phone_verified    BOOLEAN     DEFAULT false;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS phone_verified_at TIMESTAMPTZ;
+
+-- ============================================================
 -- Solar-Check extended fields (migration for existing installations)
 -- ============================================================
 
