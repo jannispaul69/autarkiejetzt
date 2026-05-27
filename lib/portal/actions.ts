@@ -160,3 +160,80 @@ export async function toggleBuyerActive(buyerId: string, isActive: boolean) {
   if (error) throw new Error(error.message);
   revalidatePath("/portal/admin/buyers");
 }
+
+export async function updateCustomLeadPrice(buyerId: string, priceCents: number | null) {
+  const { error } = await db()
+    .from("buyers")
+    .update({ custom_lead_price: priceCents })
+    .eq("id", buyerId);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/portal/admin/buyers/${buyerId}`);
+}
+
+export async function updateBuyerNotifications(
+  buyerId: string,
+  data: {
+    notification_email?: string | null;
+    notify_immediately?: boolean;
+    notify_daily_summary?: boolean;
+  }
+) {
+  const { error } = await db().from("buyers").update(data).eq("id", buyerId);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/portal/admin/buyers/${buyerId}`);
+  revalidatePath("/portal/einstellungen");
+}
+
+// ---------------------------------------------------------------------------
+// Admin: portal settings
+// ---------------------------------------------------------------------------
+
+export async function updatePortalSetting(key: string, value: string) {
+  const { error } = await db()
+    .from("portal_settings")
+    .update({ value, updated_at: new Date().toISOString() })
+    .eq("key", key);
+  if (error) throw new Error(error.message);
+  revalidatePath("/portal/admin/settings");
+}
+
+// ---------------------------------------------------------------------------
+// Bulk assignment status update
+// ---------------------------------------------------------------------------
+
+export async function bulkUpdateAssignmentStatus(
+  assignmentIds: string[],
+  status: LeadStatus
+) {
+  if (assignmentIds.length === 0) return;
+  const { error } = await db()
+    .from("lead_assignments")
+    .update({ status })
+    .in("id", assignmentIds);
+  if (error) throw new Error(error.message);
+  revalidatePath("/portal/leads");
+  revalidatePath("/portal/admin/leads");
+}
+
+// ---------------------------------------------------------------------------
+// Team invite
+// ---------------------------------------------------------------------------
+
+export async function inviteTeamMember(buyerId: string, email: string) {
+  const { data: { user }, error: authError } = await adminClient().auth.admin.createUser({
+    email,
+    email_confirm: true,
+  });
+  if (authError || !user) throw new Error(authError?.message ?? "Fehler beim Einladen");
+
+  const { error } = await db().from("buyer_team").insert({
+    buyer_id: buyerId,
+    user_id: user.id,
+    email,
+    name: email,
+    role: "member",
+  });
+  if (error) throw new Error(error.message);
+  revalidatePath("/portal/einstellungen");
+  revalidatePath(`/portal/admin/buyers/${buyerId}`);
+}

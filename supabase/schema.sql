@@ -285,3 +285,40 @@ ALTER TABLE leads ADD COLUMN IF NOT EXISTS heating_type          TEXT;
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS financing_type        TEXT;
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS previous_consultation TEXT;
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS motivations           TEXT[];
+
+-- ============================================================
+-- Portal Settings (global platform config)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS portal_settings (
+  key         TEXT        PRIMARY KEY,
+  value       TEXT        NOT NULL,
+  label       TEXT,
+  description TEXT,
+  updated_at  TIMESTAMPTZ DEFAULT now()
+);
+
+INSERT INTO portal_settings (key, value, label, description) VALUES
+  ('lead_price_default', '5000',  'Standard Lead-Preis (Cent)',  'Preis pro Lead in Cent, z.B. 5000 = 50€'),
+  ('lead_price_grade_a', '7500',  'A-Lead Preis (Cent)',         'Preis für A-Leads (Score 80-100)'),
+  ('lead_price_grade_b', '5000',  'B-Lead Preis (Cent)',         'Preis für B-Leads (Score 55-79)'),
+  ('lead_price_grade_c', '2500',  'C-Lead Preis (Cent)',         'Preis für C-Leads (Score 0-54)'),
+  ('platform_name',      'Autarkie Jetzt', 'Plattform-Name',     ''),
+  ('support_email',      'anfrage@autarkiejetzt.de', 'Support E-Mail', ''),
+  ('reclaim_days',       '7',     'Reklamationsfrist (Tage)',    'Wie viele Tage nach Lead-Lieferung reklamiert werden kann'),
+  ('auto_assign',        'false', 'Auto-Zuweisung',              'Neue Leads automatisch dem nächsten passenden Käufer zuweisen'),
+  ('email_template_lead_notify', '', 'E-Mail Vorlage: Lead-Benachrichtigung',
+   'Variablen: {{name}}, {{phone}}, {{email}}, {{plz}}, {{score}}, {{grade}}'),
+  ('email_template_confirmation', '', 'E-Mail Vorlage: Bestätigung an Lead',
+   'Variablen: {{first_name}}, {{plz}}, {{ort}}'),
+  ('scoring_weights',    '{}',    'Scoring-Gewichtungen (JSON)', 'Überschreibt Defaults aus leadScoring.ts')
+ON CONFLICT (key) DO NOTHING;
+
+ALTER TABLE portal_settings ENABLE ROW LEVEL SECURITY;
+-- Service role only – no anon access
+
+-- ── Buyer extended fields ─────────────────────────────────────────────────────
+ALTER TABLE buyers ADD COLUMN IF NOT EXISTS custom_lead_price     INTEGER;
+ALTER TABLE buyers ADD COLUMN IF NOT EXISTS notification_email    TEXT;
+ALTER TABLE buyers ADD COLUMN IF NOT EXISTS notify_immediately    BOOLEAN DEFAULT true;
+ALTER TABLE buyers ADD COLUMN IF NOT EXISTS notify_daily_summary  BOOLEAN DEFAULT false;

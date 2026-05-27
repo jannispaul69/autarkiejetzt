@@ -11,6 +11,7 @@ import {
   Database,
   Building2,
   X,
+  SlidersHorizontal,
 } from "lucide-react";
 import { createPortalBrowserClient } from "@/lib/supabase/portal-browser";
 import { useRouter } from "next/navigation";
@@ -23,9 +24,9 @@ interface Props {
 }
 
 const buyerNav = [
-  { href: "/portal/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/portal/leads", label: "Meine Leads", icon: Users },
-  { href: "/portal/team", label: "Team", icon: Settings },
+  { href: "/portal/dashboard",     label: "Dashboard",    icon: LayoutDashboard },
+  { href: "/portal/leads",         label: "Meine Leads",  icon: Users },
+  { href: "/portal/einstellungen", label: "Einstellungen", icon: SlidersHorizontal },
 ];
 
 const adminNav = [

@@ -21,6 +21,25 @@ export interface Buyer {
   prepaid_balance: number; // in Cent
   is_active: boolean;
   role: BuyerRole;
+  // Extended fields
+  custom_lead_price: number | null;
+  notification_email: string | null;
+  notify_immediately: boolean;
+  notify_daily_summary: boolean;
+}
+
+export interface PortalSetting {
+  key: string;
+  value: string;
+  label: string | null;
+  description: string | null;
+  updated_at: string;
+}
+
+export interface DailyCount {
+  date: string; // "2025-01-15"
+  received: number;
+  closed: number;
 }
 
 export interface Lead {
