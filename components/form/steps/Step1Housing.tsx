@@ -5,6 +5,7 @@ import { motion, type Variants } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { Home, Building2, Key } from "lucide-react";
 import DisqualifiedScreen from "../DisqualifiedScreen";
+import ApartmentDisqualifiedScreen from "../ApartmentDisqualifiedScreen";
 
 type HousingType = "owner_house" | "owner_apartment" | "tenant";
 
@@ -38,6 +39,7 @@ const cardVariants: Variants = {
 export default function Step1Housing({ onComplete, onDisqualified }: Props) {
   const [selected, setSelected] = useState<HousingType | null>(null);
   const [isDisqualified, setIsDisqualified] = useState(false);
+  const [isApartmentDisqualified, setIsApartmentDisqualified] = useState(false);
 
   function handleCardClick(value: HousingType) {
     if (value === "tenant") {
@@ -45,11 +47,26 @@ export default function Step1Housing({ onComplete, onDisqualified }: Props) {
       onDisqualified?.();
       return;
     }
+    if (value === "owner_apartment") {
+      setIsApartmentDisqualified(true);
+      return;
+    }
     setSelected(value);
   }
 
   if (isDisqualified) {
     return <DisqualifiedScreen onBack={() => setIsDisqualified(false)} />;
+  }
+
+  if (isApartmentDisqualified) {
+    return (
+      <ApartmentDisqualifiedScreen
+        onBack={() => {
+          setIsApartmentDisqualified(false);
+          setSelected(null);
+        }}
+      />
+    );
   }
 
   return (
