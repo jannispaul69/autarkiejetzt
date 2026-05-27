@@ -10,10 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const sc8Schema = z.object({
+  street: z.string().min(3, "Bitte Straße und Hausnummer eingeben"),
   postal_code: z
     .string()
     .regex(/^\d{5}$/, "Bitte eine gültige 5-stellige PLZ eingeben"),
-  city: z.string().optional(),
+  city: z.string().min(1, "Ort ist erforderlich"),
   first_name: z.string().min(1, "Vorname ist erforderlich"),
   last_name: z.string().min(1, "Nachname ist erforderlich"),
   phone: z
@@ -87,34 +88,58 @@ export default function SC_Step8LocationContact({ onFinalSubmit, onBack }: Props
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 -mt-2">
+      <div className="flex flex-col gap-3 -mt-2">
+        {/* Street + house number */}
         <div>
-          <Label htmlFor="sc8-postal" className="text-sm font-medium text-brand-text mb-1.5 block">
-            PLZ <span className="text-brand-error" aria-hidden="true">*</span>
+          <Label htmlFor="sc8-street" className="text-sm font-medium text-brand-text mb-1.5 block">
+            Straße + Hausnummer <span className="text-brand-error" aria-hidden="true">*</span>
           </Label>
           <Input
-            id="sc8-postal"
-            {...register("postal_code")}
-            placeholder="28195"
-            maxLength={5}
-            inputMode="numeric"
-            autoComplete="postal-code"
-            className={inputClass(!!errors.postal_code)}
+            id="sc8-street"
+            {...register("street")}
+            placeholder="Musterstraße 42"
+            autoComplete="street-address"
+            className={inputClass(!!errors.street)}
           />
-          <FieldError message={errors.postal_code?.message} />
+          <FieldError message={errors.street?.message} />
         </div>
-        <div>
-          <Label htmlFor="sc8-city" className="text-sm font-medium text-brand-text mb-1.5 block">
-            Ort <span className="text-brand-text-muted text-xs font-normal">(optional)</span>
-          </Label>
-          <Input
-            id="sc8-city"
-            {...register("city")}
-            placeholder="Bremen"
-            autoComplete="address-level2"
-            className={inputClass(false)}
-          />
+
+        {/* PLZ + city */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label htmlFor="sc8-postal" className="text-sm font-medium text-brand-text mb-1.5 block">
+              PLZ <span className="text-brand-error" aria-hidden="true">*</span>
+            </Label>
+            <Input
+              id="sc8-postal"
+              {...register("postal_code")}
+              placeholder="28195"
+              maxLength={5}
+              inputMode="numeric"
+              autoComplete="postal-code"
+              className={inputClass(!!errors.postal_code)}
+            />
+            <FieldError message={errors.postal_code?.message} />
+          </div>
+          <div>
+            <Label htmlFor="sc8-city" className="text-sm font-medium text-brand-text mb-1.5 block">
+              Ort <span className="text-brand-error" aria-hidden="true">*</span>
+            </Label>
+            <Input
+              id="sc8-city"
+              {...register("city")}
+              placeholder="Bremen"
+              autoComplete="address-level2"
+              className={inputClass(!!errors.city)}
+            />
+            <FieldError message={errors.city?.message} />
+          </div>
         </div>
+
+        {/* Hint */}
+        <p className="text-xs text-brand-text-muted leading-relaxed -mt-1">
+          Deine genaue Adresse hilft uns, die Dachausrichtung und das Solarpotenzial deines Hauses vorab zu prüfen.
+        </p>
       </div>
 
       {/* Divider */}

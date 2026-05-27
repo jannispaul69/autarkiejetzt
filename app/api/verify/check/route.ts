@@ -73,6 +73,7 @@ export async function POST(req: NextRequest) {
       timeframe:          (lead.timeframe         ?? "info_only")   as LeadFormData["timeframe"],
       postal_code:        lead.postal_code  ?? "",
       city:               lead.city         ?? undefined,
+      street:             lead.street       ?? undefined,
       first_name:         lead.first_name   ?? "",
       last_name:          lead.last_name    ?? "",
       phone:              lead.phone        ?? "",
@@ -85,6 +86,7 @@ export async function POST(req: NextRequest) {
     const baseScore = scoreLeadData(formDataForScore, {
       financing_type: lead.financing_type ?? undefined,
       heating_type:   lead.heating_type   ?? undefined,
+      street:         lead.street         ?? undefined,
     });
 
     const score: LeadScore = {

@@ -322,3 +322,8 @@ ALTER TABLE buyers ADD COLUMN IF NOT EXISTS custom_lead_price     INTEGER;
 ALTER TABLE buyers ADD COLUMN IF NOT EXISTS notification_email    TEXT;
 ALTER TABLE buyers ADD COLUMN IF NOT EXISTS notify_immediately    BOOLEAN DEFAULT true;
 ALTER TABLE buyers ADD COLUMN IF NOT EXISTS notify_daily_summary  BOOLEAN DEFAULT false;
+
+
+-- ── Solar-check: full address field ──────────────────────────────────────────
+-- Run this in your Supabase SQL editor:
+-- ALTER TABLE leads ADD COLUMN IF NOT EXISTS street text;

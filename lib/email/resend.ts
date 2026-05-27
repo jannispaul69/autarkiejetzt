@@ -143,7 +143,10 @@ function scoreBannerHtml(score: LeadScore): string {
 // ---------------------------------------------------------------------------
 function notificationHtml(lead: LeadFormData & { id: string }, score: LeadScore): string {
   const fullName = `${lead.first_name} ${lead.last_name}`;
-  const address = `${lead.postal_code}${lead.city ? ` ${lead.city}` : ""}`;
+  const addressLine = [
+    lead.street,
+    `${lead.postal_code}${lead.city ? ` ${lead.city}` : ""}`,
+  ].filter(Boolean).join(" · ");
   const phoneClean = lead.phone.replace(/\s+/g, "");
 
   return `<!DOCTYPE html>
@@ -206,7 +209,7 @@ function notificationHtml(lead: LeadFormData & { id: string }, score: LeadScore)
                     `<a href="mailto:${lead.email}"
                         style="color:#0A4D3C;text-decoration:none">${lead.email}</a>`
                   )}
-                  ${row("Adresse", address)}
+                  ${row("Adresse", addressLine)}
                 </tbody>
               </table>
             </td>

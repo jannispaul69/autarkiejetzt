@@ -50,7 +50,7 @@ export default function SolarCheckHero() {
 
             {/* Subheadline */}
             <p className="text-brand-text-muted text-lg leading-relaxed max-w-xl">
-              In 3 Minuten erfährst du, ob und wie viel du mit einer Solaranlage sparen kannst – plus kostenlose Beratung von einem Experten.
+              In 3 Minuten erfährst du, wie viel du mit einer Solaranlage sparst – kostenlose Beratung von einem Experten aus deiner Region inklusive.
             </p>
 
             {/* Trust chips */}

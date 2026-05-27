@@ -14,6 +14,7 @@ export interface LeadScore {
     completeness: number;      // max 10
     financing_bonus?: number;  // max 10 (solar-check only)
     heating_bonus?: number;    // max 5  (solar-check only)
+    address_bonus?: number;    // max 5  (solar-check only — full street address)
   };
   summary: string;
 }
@@ -22,6 +23,7 @@ export interface LeadScore {
 export interface ScoringExtras {
   financing_type?: string;
   heating_type?: string;
+  street?: string;  // +5 when a full street address is provided
 }
 
 // ---------------------------------------------------------------------------
@@ -109,16 +111,19 @@ export function scoreLeadData(data: LeadFormData, extras?: ScoringExtras): LeadS
     ? (extras.heating_type === "gas" || extras.heating_type === "oil" ? 5 : 2)
     : 0;
 
+  // Solar-check bonus: full street address provided — installer can pre-check via satellite (max 5)
+  const address_bonus = extras?.street?.trim() ? 5 : 0;
+
   const total = Math.min(
     100,
-    roof + consumption + timeframe + location + completeness + financing_bonus + heating_bonus,
+    roof + consumption + timeframe + location + completeness + financing_bonus + heating_bonus + address_bonus,
   );
   const grade = gradeFromTotal(total);
 
   return {
     total,
     grade,
-    breakdown: { roof, consumption, timeframe, location, completeness, financing_bonus, heating_bonus },
+    breakdown: { roof, consumption, timeframe, location, completeness, financing_bonus, heating_bonus, address_bonus },
     summary: GRADE_SUMMARIES[grade],
   };
 }

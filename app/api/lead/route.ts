@@ -35,7 +35,8 @@ export async function POST(req: NextRequest) {
     // Score the lead (pure function, no I/O)
     const score = scoreLeadData(data, {
       financing_type: body.financing_type,
-      heating_type: body.heating_type,
+      heating_type:   body.heating_type,
+      street:         body.street ?? undefined,
     });
 
     const ipAddress =
@@ -64,12 +65,13 @@ export async function POST(req: NextRequest) {
         quality_score: score.total,
         quality_grade: score.grade,
         // Solar-check extended fields (null on standard funnel)
-        building_type: body.building_type ?? null,
-        roof_type: body.roof_type ?? null,
-        heating_type: body.heating_type ?? null,
-        financing_type: body.financing_type ?? null,
+        building_type:         body.building_type         ?? null,
+        roof_type:             body.roof_type             ?? null,
+        heating_type:          body.heating_type          ?? null,
+        financing_type:        body.financing_type        ?? null,
         previous_consultation: body.previous_consultation ?? null,
-        motivations: body.motivations ?? null,
+        motivations:           body.motivations           ?? null,
+        street:                body.street                ?? null,
       });
       if (error) {
         console.error("[supabase] insert error:", error);

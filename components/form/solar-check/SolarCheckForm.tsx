@@ -134,9 +134,16 @@ export default function SolarCheckForm() {
     <div className="bg-white rounded-2xl shadow-xl border border-brand-border overflow-hidden">
       {/* Card header */}
       <div className="px-6 pt-6 pb-5 border-b border-brand-border">
-        <h2 className="font-heading text-[1.0625rem] font-semibold text-brand-text leading-snug">
-          Dein Solar-Check
-        </h2>
+        <div className="flex items-start justify-between gap-3">
+          <h2 className="font-heading text-[1.0625rem] font-semibold text-brand-text leading-snug">
+            Dein Solar-Check
+          </h2>
+          <span
+            className="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-[0.625rem] font-semibold tracking-wide border border-amber-200 bg-amber-50 text-amber-700 whitespace-nowrap"
+          >
+            ✦ Solar-Check Premium · Detaillierte Analyse
+          </span>
+        </div>
         <p className="text-sm text-brand-text-muted mt-1">
           Schritt {currentStep} von {TOTAL_STEPS} – dauert ca. 3 Minuten
         </p>

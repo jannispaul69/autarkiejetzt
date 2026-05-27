@@ -46,7 +46,9 @@ export const leadSchema = step1Schema
   .merge(step5Schema)
   .merge(step6Schema);
 
-export type LeadFormData = z.infer<typeof leadSchema>;
+// street is solar-check only — not in the base schema but added to the type
+// so email/scoring helpers can reference it without breaking the standard funnel.
+export type LeadFormData = z.infer<typeof leadSchema> & { street?: string };
 
 // ─── Solar-Check extended schemas ───────────────────────────────────────────
 
@@ -72,6 +74,13 @@ export const scTimeframeMotivationSchema = z.object({
     .max(2, "Maximal 2 Motivationen"),
 });
 
+// Solar-check collects a full address (street required, city required)
+export const scLocationSchema = z.object({
+  street:      z.string().min(3, "Bitte Straße und Hausnummer eingeben"),
+  postal_code: z.string().regex(/^\d{5}$/, "Bitte eine gültige 5-stellige PLZ eingeben"),
+  city:        z.string().min(1, "Ort ist erforderlich"),
+});
+
 export const solarCheckLeadSchema = step1Schema
   .merge(scBuildingSchema)
   .merge(step2Schema)
@@ -79,7 +88,7 @@ export const solarCheckLeadSchema = step1Schema
   .merge(scHeatingSchema)
   .merge(scFinanceSchema)
   .merge(scTimeframeMotivationSchema)
-  .merge(step5Schema)
+  .merge(scLocationSchema)   // full address instead of step5Schema
   .merge(step6Schema);
 
 export type SolarCheckLeadData = z.infer<typeof solarCheckLeadSchema>;
