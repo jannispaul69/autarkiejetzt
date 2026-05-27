@@ -15,7 +15,7 @@ export default function Hero() {
           aria-label="Autarkie Jetzt – zur Startseite"
         >
           <Image
-            src="/logo.png"
+            src="/logo-2.png"
             alt="Autarkie Jetzt"
             width={1693}
             height={929}
@@ -82,25 +82,9 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right: Hero image (desktop only) + Form */}
-          <div className="flex flex-col gap-6">
-
-            {/* Hero image – hidden on mobile */}
-            <div className="relative hidden lg:block h-[260px] rounded-2xl overflow-hidden shadow-md">
-              <Image
-                src="/hero.jpg"
-                alt="Haus mit Solaranlage auf dem Dach"
-                fill
-                className="object-cover object-center"
-                sizes="(max-width: 1280px) 50vw, 640px"
-                priority
-              />
-            </div>
-
-            {/* Form */}
-            <div id="hero-form">
-              <MultiStepForm />
-            </div>
+          {/* Right: Form */}
+          <div id="hero-form">
+            <MultiStepForm />
           </div>
 
         </div>

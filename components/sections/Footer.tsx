@@ -13,14 +13,7 @@ export default function Footer() {
 
           {/* Col 1: Brand */}
           <div className="flex flex-col gap-4">
-            <span
-              style={{
-                color: "white",
-                fontFamily: "var(--font-manrope)",
-                fontWeight: 800,
-                fontSize: "1.25rem",
-              }}
-            >
+            <span className="font-heading text-white font-bold text-xl">
               ☀️ Autarkie Jetzt
             </span>
             <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
