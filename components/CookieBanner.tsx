@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
 import Script from "next/script";
 import Link from "next/link";
 
@@ -9,12 +8,8 @@ type Consent = "all" | "essential" | null;
 const CONSENT_KEY = "aj_cookie_consent";
 
 export default function CookieBanner() {
-  const pathname = usePathname();
   const [consent, setConsent] = useState<Consent>(null);
   const [visible, setVisible] = useState(false);
-
-  // /jetzt is a minimal mobile LP — no cookie banner, no tracking
-  if (pathname === "/jetzt") return null;
 
   useEffect(() => {
     try {
