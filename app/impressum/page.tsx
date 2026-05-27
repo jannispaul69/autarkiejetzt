@@ -90,6 +90,12 @@ export default function ImpressumPage() {
             <br />
             Finanzamt Bremen
           </p>
+          <p>
+            Umsatzsteuer-Identifikationsnummer gemäß § 27 a
+            Umsatzsteuergesetz:
+            <br />
+            DE358958147
+          </p>
         </Section>
 
         <Section title="Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV">
