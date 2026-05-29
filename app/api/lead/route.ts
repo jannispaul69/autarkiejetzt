@@ -6,6 +6,37 @@ import { scoreLeadData, gradeFromTotal, GRADE_SUMMARIES, type LeadScore } from "
 import { normalizePhone, maskPhone } from "@/lib/twilio/client";
 import { randomUUID } from "crypto";
 
+// ─── Geocoding helper ────────────────────────────────────────────────────────
+
+async function geocodePLZ(plz: string): Promise<{ lat: number; lng: number } | null> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?postalcode=${encodeURIComponent(plz)}&country=DE&format=json&limit=1`,
+      { headers: { "User-Agent": "autarkiejetzt.de/1.0 (anfrage@autarkiejetzt.de)" } }
+    );
+    const data = await res.json();
+    if (data[0]) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+  } catch (e) {
+    console.error("[geocode] failed for PLZ", plz, e);
+  }
+  return null;
+}
+
+/** Fire-and-forget: geocode PLZ and update lead row with coordinates. */
+function geocodeAndUpdate(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+  leadId: string,
+  plz: string
+): void {
+  geocodePLZ(plz)
+    .then(async (coords) => {
+      if (!coords) return;
+      await supabase.from("leads").update({ lat: coords.lat, lng: coords.lng }).eq("id", leadId);
+    })
+    .catch((e) => console.error("[geocode] update failed:", e));
+}
+
 const hasSupabase = !!(
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
   process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -93,6 +124,9 @@ export async function POST(req: NextRequest) {
         console.error("[supabase] insert error:", error);
         return NextResponse.json({ error: "Datenbankfehler" }, { status: 500 });
       }
+
+      // Fire-and-forget geocoding — does not block the response
+      geocodeAndUpdate(supabase, leadId, data.postal_code);
     } else {
       console.warn("[mock mode] Supabase not configured – lead not persisted. ID:", leadId);
     }
@@ -209,6 +243,9 @@ async function handleJetzLead(body: Record<string, unknown>): Promise<NextRespon
         console.error("[jetzt] supabase insert error:", error);
         return NextResponse.json({ error: "Datenbankfehler" }, { status: 500 });
       }
+
+      // Fire-and-forget geocoding
+      geocodeAndUpdate(supabase, leadId, postal_code);
 
       // Immediately notify buyer (no phone verification gate)
       // Build minimal LeadFormData shape for the email template

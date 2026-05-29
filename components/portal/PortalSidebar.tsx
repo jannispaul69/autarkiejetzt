@@ -14,6 +14,7 @@ import {
   X,
   SlidersHorizontal,
   ShoppingCart,
+  Map,
 } from "lucide-react";
 import { createPortalBrowserClient } from "@/lib/supabase/portal-browser";
 import { useRouter } from "next/navigation";
@@ -29,13 +30,15 @@ const buyerNav = [
   { href: "/portal/dashboard",     label: "Dashboard",     icon: LayoutDashboard },
   { href: "/portal/leads",         label: "Meine Leads",   icon: Users },
   { href: "/portal/marktplatz",    label: "Marktplatz",    icon: ShoppingCart },
+  { href: "/portal/karte",         label: "Karte",         icon: Map },
   { href: "/portal/einstellungen", label: "Einstellungen", icon: SlidersHorizontal },
 ];
 
 const adminNav = [
-  { href: "/portal/admin", label: "Übersicht", icon: BarChart3 },
-  { href: "/portal/admin/leads", label: "Alle Leads", icon: Database },
-  { href: "/portal/admin/buyers", label: "Käufer", icon: Building2 },
+  { href: "/portal/admin",          label: "Übersicht",     icon: BarChart3 },
+  { href: "/portal/admin/leads",    label: "Alle Leads",    icon: Database },
+  { href: "/portal/admin/karte",    label: "Karte",         icon: Map },
+  { href: "/portal/admin/buyers",   label: "Käufer",        icon: Building2 },
   { href: "/portal/admin/settings", label: "Einstellungen", icon: Settings },
 ];
 

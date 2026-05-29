@@ -2,7 +2,7 @@
 
 import { createServerClient as createServiceClient } from "@/lib/supabase/server";
 import { createPortalServerClient } from "@/lib/supabase/portal-server";
-import type { Buyer, AssignedLead, PortalSetting, DailyCount } from "./types";
+import type { Buyer, AssignedLead, MapLead, PortalSetting, DailyCount } from "./types";
 
 /** Get the authenticated Supabase user (portal session). */
 export async function getPortalUser() {
@@ -277,6 +277,110 @@ export async function getBuyerDetailStats(buyerId: string) {
       ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
       : null,
   };
+}
+
+// ─── Map data ────────────────────────────────────────────────────────────────
+
+function toDisplayName(first: string, last: string): string {
+  return last ? `${first} ${last.charAt(0)}.` : first;
+}
+
+type PartialAssignment = {
+  id: string;
+  status: string;
+  next_followup: string | null;
+  buyer_id?: string;
+  leads: import("./types").Lead;
+  buyers?: { company_name: string } | null;
+};
+
+/** Buyer map: all assigned leads with coordinates. */
+export async function getBuyerLeadsForMap(buyerId: string): Promise<MapLead[]> {
+  const db = createServiceClient();
+  const { data } = await db
+    .from("lead_assignments")
+    .select("id, status, next_followup, leads(*)")
+    .eq("buyer_id", buyerId)
+    .order("created_at", { ascending: false });
+
+  return ((data ?? []) as unknown as PartialAssignment[]).map((row) => ({
+    id:                row.leads.id,
+    assignment_id:     row.id,
+    display_name:      toDisplayName(row.leads.first_name, row.leads.last_name),
+    lat:               row.leads.lat ?? null,
+    lng:               row.leads.lng ?? null,
+    quality_grade:     row.leads.quality_grade,
+    quality_score:     row.leads.quality_score,
+    status:            row.status,
+    postal_code:       row.leads.postal_code,
+    city:              row.leads.city,
+    street:            row.leads.street,
+    phone:             row.leads.phone,
+    annual_consumption:row.leads.annual_consumption,
+    roof_orientation:  row.leads.roof_orientation,
+    timeframe:         row.leads.timeframe,
+    next_followup:     row.next_followup,
+  }));
+}
+
+/** Admin map: all assigned leads + unassigned leads. */
+export async function getAllLeadsForAdminMap(): Promise<MapLead[]> {
+  const db = createServiceClient();
+
+  const [{ data: assignments }, { data: allLeads }] = await Promise.all([
+    db
+      .from("lead_assignments")
+      .select("id, status, next_followup, buyer_id, leads(*), buyers(id, company_name)")
+      .order("created_at", { ascending: false }),
+    db.from("leads").select("*").order("created_at", { ascending: false }),
+  ]);
+
+  const assignedLeadIds = new Set(
+    ((assignments ?? []) as unknown as PartialAssignment[]).map((a) => a.leads.id)
+  );
+
+  const assignedMapped: MapLead[] = ((assignments ?? []) as unknown as PartialAssignment[]).map((row) => ({
+    id:                row.leads.id,
+    assignment_id:     row.id,
+    display_name:      toDisplayName(row.leads.first_name, row.leads.last_name),
+    lat:               row.leads.lat ?? null,
+    lng:               row.leads.lng ?? null,
+    quality_grade:     row.leads.quality_grade,
+    quality_score:     row.leads.quality_score,
+    status:            row.status,
+    postal_code:       row.leads.postal_code,
+    city:              row.leads.city,
+    street:            row.leads.street,
+    phone:             row.leads.phone,
+    annual_consumption:row.leads.annual_consumption,
+    roof_orientation:  row.leads.roof_orientation,
+    timeframe:         row.leads.timeframe,
+    next_followup:     row.next_followup,
+    buyer_name: row.buyers?.company_name ?? undefined,
+  }));
+
+  const unassignedMapped: MapLead[] = ((allLeads ?? []) as import("./types").Lead[])
+    .filter((l) => !assignedLeadIds.has(l.id))
+    .map((lead) => ({
+      id:                lead.id,
+      display_name:      toDisplayName(lead.first_name, lead.last_name),
+      lat:               lead.lat ?? null,
+      lng:               lead.lng ?? null,
+      quality_grade:     lead.quality_grade,
+      quality_score:     lead.quality_score,
+      status:            "unassigned",
+      postal_code:       lead.postal_code,
+      city:              lead.city,
+      street:            lead.street,
+      phone:             lead.phone,
+      annual_consumption:lead.annual_consumption,
+      roof_orientation:  lead.roof_orientation,
+      timeframe:         lead.timeframe,
+      next_followup:     null,
+      is_unassigned:     true,
+    }));
+
+  return [...assignedMapped, ...unassignedMapped];
 }
 
 /** Marketplace leads available for purchase (excludes already-bought by this buyer). */

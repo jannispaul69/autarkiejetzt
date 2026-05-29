@@ -63,6 +63,30 @@ export interface Lead {
   status: string;
   marketplace_available: boolean;
   marketplace_price: number | null;
+  lat: number | null;
+  lng: number | null;
+}
+
+/** Normalised shape used by buyer + admin map views */
+export interface MapLead {
+  id: string;
+  assignment_id?: string;
+  display_name: string;
+  lat: number | null;
+  lng: number | null;
+  quality_grade: string | null;
+  quality_score: number | null;
+  status: string;
+  postal_code: string;
+  city: string | null;
+  street: string | null;
+  phone: string;
+  annual_consumption: string;
+  roof_orientation: string;
+  timeframe: string;
+  next_followup: string | null;
+  buyer_name?: string;
+  is_unassigned?: boolean;
 }
 
 export interface LeadAssignment {

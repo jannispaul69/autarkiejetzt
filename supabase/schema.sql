@@ -332,6 +332,11 @@ ALTER TABLE buyers ADD COLUMN IF NOT EXISTS notify_daily_summary  BOOLEAN DEFAUL
 -- Run this in your Supabase SQL editor:
 -- ALTER TABLE leads ADD COLUMN IF NOT EXISTS external_id text UNIQUE;
 
+-- ── Lead Map: PLZ coordinates ────────────────────────────────────────────────
+-- Run these in your Supabase SQL editor:
+-- ALTER TABLE leads ADD COLUMN IF NOT EXISTS lat float;
+-- ALTER TABLE leads ADD COLUMN IF NOT EXISTS lng float;
+
 -- ── Lead Marketplace ──────────────────────────────────────────────────────────
 -- Run these in your Supabase SQL editor:
 -- ALTER TABLE leads ADD COLUMN IF NOT EXISTS marketplace_available boolean DEFAULT false;
