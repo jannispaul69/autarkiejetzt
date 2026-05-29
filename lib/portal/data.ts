@@ -279,6 +279,40 @@ export async function getBuyerDetailStats(buyerId: string) {
   };
 }
 
+/** Marketplace leads available for purchase (excludes already-bought by this buyer). */
+export async function getMarketplaceLeads(buyerId: string) {
+  const db = createServiceClient();
+
+  // Lead IDs already purchased by this buyer
+  const { data: purchased } = await db
+    .from("lead_assignments")
+    .select("lead_id")
+    .eq("buyer_id", buyerId);
+
+  const purchasedIds = (purchased ?? []).map(
+    (p: { lead_id: string }) => p.lead_id
+  );
+
+  // Fetch all marketplace-available leads
+  const { data: leads } = await db
+    .from("leads")
+    .select("*")
+    .eq("marketplace_available", true)
+    .order("created_at", { ascending: false });
+
+  // Filter out already-purchased in JS (avoids complex NOT IN with UUIDs)
+  const purchasedSet = new Set(purchasedIds);
+  return ((leads ?? []) as import("./types").Lead[]).filter(
+    (l) => !purchasedSet.has(l.id)
+  );
+}
+
+/** Count of marketplace leads available for this buyer (for sidebar badge). */
+export async function getMarketplaceCount(buyerId: string): Promise<number> {
+  const leads = await getMarketplaceLeads(buyerId);
+  return leads.length;
+}
+
 /** Dashboard stats for a buyer. */
 export async function getBuyerStats(buyerId: string) {
   const db = createServiceClient();

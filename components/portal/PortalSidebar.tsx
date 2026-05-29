@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -12,6 +13,7 @@ import {
   Building2,
   X,
   SlidersHorizontal,
+  ShoppingCart,
 } from "lucide-react";
 import { createPortalBrowserClient } from "@/lib/supabase/portal-browser";
 import { useRouter } from "next/navigation";
@@ -24,8 +26,9 @@ interface Props {
 }
 
 const buyerNav = [
-  { href: "/portal/dashboard",     label: "Dashboard",    icon: LayoutDashboard },
-  { href: "/portal/leads",         label: "Meine Leads",  icon: Users },
+  { href: "/portal/dashboard",     label: "Dashboard",     icon: LayoutDashboard },
+  { href: "/portal/leads",         label: "Meine Leads",   icon: Users },
+  { href: "/portal/marktplatz",    label: "Marktplatz",    icon: ShoppingCart },
   { href: "/portal/einstellungen", label: "Einstellungen", icon: SlidersHorizontal },
 ];
 
@@ -41,12 +44,14 @@ function NavLink({
   label,
   icon: Icon,
   active,
+  badge,
   onClick,
 }: {
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string; size?: number }>;
   active: boolean;
+  badge?: number | null;
   onClick?: () => void;
 }) {
   return (
@@ -60,7 +65,12 @@ function NavLink({
       }`}
     >
       <Icon className="flex-shrink-0" size={17} />
-      {label}
+      <span className="flex-1">{label}</span>
+      {badge != null && badge > 0 && (
+        <span className="ml-auto flex-shrink-0 min-w-[20px] h-5 px-1.5 rounded-full bg-[#F4B400] text-[#1A1A1A] text-[10px] font-bold flex items-center justify-center leading-none">
+          {badge > 99 ? "99+" : badge}
+        </span>
+      )}
     </Link>
   );
 }
@@ -68,6 +78,14 @@ function NavLink({
 export default function PortalSidebar({ isAdmin, buyerName, open, onClose }: Props) {
   const pathname = usePathname();
   const router = useRouter();
+  const [marketplaceCount, setMarketplaceCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/portal/marketplace-count")
+      .then((r) => r.json())
+      .then((d) => setMarketplaceCount(d.count ?? 0))
+      .catch(() => {});
+  }, []);
 
   async function handleLogout() {
     const supabase = createPortalBrowserClient();
@@ -124,6 +142,7 @@ export default function PortalSidebar({ isAdmin, buyerName, open, onClose }: Pro
                 ? pathname === "/portal/dashboard"
                 : pathname.startsWith(item.href)
             }
+            badge={item.href === "/portal/marktplatz" ? marketplaceCount : undefined}
             onClick={onClose}
           />
         ))}

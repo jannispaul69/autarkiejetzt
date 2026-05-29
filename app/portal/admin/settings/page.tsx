@@ -22,6 +22,7 @@ interface Settings {
   support_email: string;
   reclaim_days: string;
   auto_assign: string;
+  auto_marketplace_unmatched: string;
   email_template_lead_notify: string;
   email_template_confirmation: string;
   scoring_weights: string;
@@ -289,7 +290,7 @@ export default function AdminSettingsPage() {
               ))}
             </div>
 
-            <div className="rounded-xl border border-gray-200 bg-white p-5">
+            <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-800">Auto-Zuweisung</p>
@@ -305,6 +306,29 @@ export default function AdminSettingsPage() {
                     startTransition(async () => {
                       try { await saveSetting("auto_assign", value); toast.success("Gespeichert."); }
                       catch { toast.error("Fehler."); }
+                    });
+                  }}
+                />
+              </div>
+              <div className="border-t border-gray-100 pt-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-800">
+                    Marktplatz: Ungematchte Leads automatisch freigeben
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    Neue Leads ohne PLZ-Match werden automatisch im Marktplatz angeboten
+                  </p>
+                </div>
+                <Switch
+                  checked={settings.auto_marketplace_unmatched === "true"}
+                  onCheckedChange={(v) => {
+                    const value = String(v);
+                    setSettings((prev) => ({ ...prev, auto_marketplace_unmatched: value }));
+                    startTransition(async () => {
+                      try {
+                        await saveSetting("auto_marketplace_unmatched", value);
+                        toast.success("Gespeichert.");
+                      } catch { toast.error("Fehler."); }
                     });
                   }}
                 />

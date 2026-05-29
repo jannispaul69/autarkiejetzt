@@ -331,3 +331,13 @@ ALTER TABLE buyers ADD COLUMN IF NOT EXISTS notify_daily_summary  BOOLEAN DEFAUL
 -- ── Meta Lead Ads: external dedup ID ─────────────────────────────────────────
 -- Run this in your Supabase SQL editor:
 -- ALTER TABLE leads ADD COLUMN IF NOT EXISTS external_id text UNIQUE;
+
+-- ── Lead Marketplace ──────────────────────────────────────────────────────────
+-- Run these in your Supabase SQL editor:
+-- ALTER TABLE leads ADD COLUMN IF NOT EXISTS marketplace_available boolean DEFAULT false;
+-- ALTER TABLE leads ADD COLUMN IF NOT EXISTS marketplace_price integer; -- NULL = grade-based default from portal_settings
+-- ALTER TABLE buyers ADD COLUMN IF NOT EXISTS notify_marketplace boolean DEFAULT false;
+-- INSERT INTO portal_settings (key, value, label, description) VALUES
+--   ('auto_marketplace_unmatched', 'false', 'Marktplatz: Ungematchte Leads auto-freigeben',
+--    'Neue Leads ohne PLZ-Match werden automatisch im Marktplatz angeboten')
+-- ON CONFLICT (key) DO NOTHING;

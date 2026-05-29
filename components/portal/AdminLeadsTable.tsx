@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { assignLeadToBuyer } from "@/lib/portal/actions";
+import { assignLeadToBuyer, setLeadMarketplace } from "@/lib/portal/actions";
 import {
   Select,
   SelectContent,
@@ -15,7 +15,7 @@ import StatusBadge from "./StatusBadge";
 import SourceBadge from "./SourceBadge";
 import type { Lead } from "@/lib/portal/types";
 import { toast } from "sonner";
-import { Download } from "lucide-react";
+import { Download, ShoppingCart, Check } from "lucide-react";
 
 interface Row {
   lead: Lead;
@@ -37,10 +37,14 @@ interface Props {
   buyers: Buyer[];
 }
 
+/** Per-lead marketplace price override state */
+type MarketplaceState = Record<string, { pending: boolean; priceInput: string }>;
+
 export default function AdminLeadsTable({ rows, buyers }: Props) {
   const [gradeFilter, setGradeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [buyerFilter, setBuyerFilter] = useState("all");
+  const [marketplace, setMarketplace] = useState<MarketplaceState>({});
   const [, startTransition] = useTransition();
 
   const filtered = rows.filter((r) => {
@@ -64,6 +68,31 @@ export default function AdminLeadsTable({ rows, buyers }: Props) {
         toast.success("Lead zugewiesen.");
       } catch {
         toast.error("Fehler beim Zuweisen.");
+      }
+    });
+  }
+
+  function handleMarketplace(lead: Lead) {
+    if (lead.marketplace_available) return; // already in marketplace
+
+    const priceRaw = marketplace[lead.id]?.priceInput ?? "";
+    const priceCents = priceRaw ? Math.round(parseFloat(priceRaw) * 100) : null;
+
+    setMarketplace((prev) => ({
+      ...prev,
+      [lead.id]: { ...(prev[lead.id] ?? { priceInput: "" }), pending: true },
+    }));
+
+    startTransition(async () => {
+      try {
+        await setLeadMarketplace(lead.id, true, priceCents);
+        toast.success("Lead im Marktplatz verfügbar.");
+      } catch {
+        toast.error("Fehler beim Freigeben.");
+        setMarketplace((prev) => ({
+          ...prev,
+          [lead.id]: { ...(prev[lead.id] ?? { priceInput: "" }), pending: false },
+        }));
       }
     });
   }
@@ -180,6 +209,7 @@ export default function AdminLeadsTable({ rows, buyers }: Props) {
                 "Käufer",
                 "Datum",
                 "Zuweisen",
+                "Marktplatz",
               ].map((h) => (
                 <th
                   key={h}
@@ -250,6 +280,45 @@ export default function AdminLeadsTable({ rows, buyers }: Props) {
                       ))}
                     </SelectContent>
                   </Select>
+                </td>
+                <td className="px-4 py-3">
+                  {r.lead.marketplace_available ? (
+                    <span className="inline-flex items-center gap-1 text-xs text-green-700 bg-green-50 border border-green-200 px-2 py-1 rounded-lg">
+                      <Check size={11} />
+                      Im Marktplatz
+                    </span>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <div className="relative">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">€</span>
+                        <input
+                          type="number"
+                          min={0}
+                          step={0.5}
+                          placeholder="Standard"
+                          value={marketplace[r.lead.id]?.priceInput ?? ""}
+                          onChange={(e) =>
+                            setMarketplace((prev) => ({
+                              ...prev,
+                              [r.lead.id]: {
+                                ...(prev[r.lead.id] ?? { pending: false }),
+                                priceInput: e.target.value,
+                              },
+                            }))
+                          }
+                          className="h-7 w-24 text-xs pl-5 pr-2 border border-dashed border-gray-300 rounded-lg focus:outline-none focus:border-gray-400"
+                        />
+                      </div>
+                      <button
+                        onClick={() => handleMarketplace(r.lead)}
+                        disabled={marketplace[r.lead.id]?.pending}
+                        className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg bg-[#0A4D3C] text-white hover:bg-[#0D5E4A] transition-colors disabled:opacity-50"
+                      >
+                        <ShoppingCart size={11} />
+                        Freigeben
+                      </button>
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}

@@ -198,6 +198,38 @@ export async function updatePortalSetting(key: string, value: string) {
 }
 
 // ---------------------------------------------------------------------------
+// Marketplace actions
+// ---------------------------------------------------------------------------
+
+export async function setLeadMarketplace(
+  leadId: string,
+  available: boolean,
+  priceCents?: number | null
+) {
+  const update: Record<string, unknown> = { marketplace_available: available };
+  if (priceCents !== undefined) update.marketplace_price = priceCents ?? null;
+  const { error } = await db()
+    .from("leads")
+    .update(update)
+    .eq("id", leadId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/portal/admin/leads");
+  revalidatePath("/portal/marktplatz");
+}
+
+export async function updateBuyerMarketplaceNotify(
+  buyerId: string,
+  notify: boolean
+) {
+  const { error } = await db()
+    .from("buyers")
+    .update({ notify_marketplace: notify })
+    .eq("id", buyerId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/portal/marktplatz");
+}
+
+// ---------------------------------------------------------------------------
 // Bulk assignment status update
 // ---------------------------------------------------------------------------
 

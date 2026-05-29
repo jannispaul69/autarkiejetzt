@@ -26,6 +26,7 @@ export interface Buyer {
   notification_email: string | null;
   notify_immediately: boolean;
   notify_daily_summary: boolean;
+  notify_marketplace: boolean;
 }
 
 export interface PortalSetting {
@@ -60,6 +61,8 @@ export interface Lead {
   quality_score: number | null;
   quality_grade: string | null;
   status: string;
+  marketplace_available: boolean;
+  marketplace_price: number | null;
 }
 
 export interface LeadAssignment {
